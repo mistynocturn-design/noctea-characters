@@ -3589,7 +3589,7 @@ a.sidebar-nav-item:hover,a.sidebar-nav-item:focus{color:#baa7bf;text-decoration:
 a.sidebar-nav-item:hover,
 a.sidebar-nav-item:focus,
 a.sidebar-nav-item:active,
-.sidebar-nav-item.active { color: #174f35; }
+.sidebar-nav-item.active { color: #b8b8b8; }
 @media (max-width: 760px) {
   .home-hero { aspect-ratio: 3 / 1; }
   .home-details-content { min-height: 5rem; }
