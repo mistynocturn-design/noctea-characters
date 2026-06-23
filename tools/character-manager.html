@@ -1,0 +1,1011 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Character Manager</title>
+  <style>
+    :root { --accent:#4e4a65; --soft:#e7e3d8; --ink:#161732; --tab-color:#4e4a65; --section-text:#e7e3d8; --keyword-bg:#e7e3d8; --line:#e1e4ea; --bg:#f6f7f9; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: #222; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    main { max-width: 1240px; margin: 0 auto; padding: 26px 18px 46px; }
+    h1 { font-size: 24px; margin: 0 0 4px; }
+    h2 { font-size: 15px; margin: 0 0 12px; }
+    p { line-height: 1.55; }
+    label { display: block; font-size: 12px; font-weight: 800; margin: 10px 0 5px; color: #555; }
+    input, textarea, select { width: 100%; border: 1px solid #cfd4dc; border-radius: 8px; padding: 9px 10px; background: #fff; color: #20242a; font: inherit; font-size: 14px; }
+    textarea { min-height: 96px; resize: vertical; white-space: pre-wrap; }
+    button { border: 0; border-radius: 8px; padding: 9px 12px; background: var(--accent); color: var(--soft); cursor: pointer; font-weight: 800; }
+    button:hover, button:focus { filter: brightness(.96); }
+    button.secondary { background: #596273; color: #fff; }
+    button.soft { background: var(--soft); color: var(--ink); }
+    button.danger { background: #8b4141; color: #fff; }
+    .intro { color: #68707c; font-size: 13px; margin: 0 0 18px; }
+    .tool-guide { background:#fff; border:1px solid #e3e6ea; border-radius:8px; margin:10px 0 16px; padding:0 12px; }
+    .tool-guide summary { color:#68707c; cursor:pointer; font-size:12px; font-weight:800; padding:9px 0; }
+    .tool-guide ol { color:#68707c; font-size:12px; line-height:1.65; margin:0 0 11px; padding-left:20px; }
+    [data-help] { cursor:help; position:relative; }
+    [data-help]::after { background:rgba(42,43,51,.92); border-radius:5px; color:#fff; content:attr(data-help); font-size:10px; font-weight:500; left:0; line-height:1.45; max-width:240px; opacity:0; padding:6px 8px; pointer-events:none; position:absolute; top:calc(100% + 6px); transform:translateY(-2px); transition:opacity .15s,transform .15s; width:max-content; z-index:20; }
+    [data-help]:hover::after, [data-help]:focus-visible::after { opacity:.78; transform:translateY(0); }
+    .layout { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(340px, .95fr); gap: 16px; align-items: start; }
+    .panel { background: #fff; border: 1px solid #e3e6ea; border-radius: 10px; padding: 15px; margin-bottom: 14px; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .status { color: #68707c; font-size: 12px; min-height: 18px; margin-top: 8px; }
+    .small { color: #68707c; font-size: 12px; line-height: 1.55; }
+    .list { display: grid; gap: 8px; margin-top: 10px; }
+    .item { border: 1px solid #ebedf1; border-radius: 8px; padding: 9px; background: #fbfbfc; }
+    .item-head { align-items: center; display: flex; gap: 8px; justify-content: space-between; }
+    .item-title { font-size: 13px; font-weight: 800; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .mini-actions { display: flex; gap: 5px; }
+    .mini-actions button { border-radius: 6px; font-size: 11px; padding: 5px 7px; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; }
+    .tab { background: #ebedf1; color: #555; }
+    .tab.active { background: var(--accent); color: var(--soft); }
+    .builder-panel { display: none; }
+    .builder-panel.active { display: block; }
+    .output { min-height: 340px; font-family: Consolas, "Courier New", monospace; font-size: 12px; white-space: pre; }
+    .preview-wrap { position: sticky; top: 12px; }
+    .preview-card { border: 1px solid #e5e7ec; border-radius: 8px; overflow: hidden; background: #fbfbfb; max-width: 320px; }
+    .preview-card-img { aspect-ratio: 1/1; background: #e8ebf0; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 38px; font-weight: 900; overflow: hidden; }
+    .preview-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .preview-card-body { padding: 12px; }
+    .preview-role { color: var(--accent); font-size: 11px; font-weight: 900; margin: 0 0 4px; text-transform: uppercase; }
+    .preview-card h3 { color: var(--ink); margin: 0 0 8px; }
+    .preview-facts { display: grid; gap: 4px; margin: 0; }
+    .preview-facts div { display: grid; grid-template-columns: 68px 1fr; gap: 7px; }
+    .preview-facts dt { color: #888; font-size: 11px; font-weight: 900; text-transform: uppercase; }
+    .preview-facts dd { margin: 0; font-size: 12px; }
+    .wiki-preview { margin-top: 14px; border: 1px solid #e5e7ec; border-radius: 8px; background: #fbfbfb; padding: 12px; }
+    .wiki-grid { display: grid; grid-template-columns: 130px 1fr; gap: 12px; }
+    .portrait { aspect-ratio: 1/1; border-radius: 6px; background: #e8ebf0; overflow: hidden; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 32px; font-weight: 900; }
+    .portrait img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .section-title { display: inline-block; background: var(--accent); color: var(--section-text); font-size: 11px; font-weight: 900; padding: 3px 8px; margin: 0 0 8px; text-transform: uppercase; }
+    .section-title:not(:first-child) { margin-top: 10px; }
+    .info-list { display: grid; gap: 5px; margin: 0; }
+    .info-list div { display: grid; grid-template-columns: 72px 1fr; gap: 8px; }
+    .info-list dt { color: #777; font-size: 11px; font-weight: 900; text-transform: uppercase; }
+    .info-list dd { margin: 0; font-size: 12px; }
+    .note { background: color-mix(in srgb, var(--keyword-bg) 42%, transparent); border-radius: 5px; color: color-mix(in srgb, var(--ink) 56%, transparent); font-size: 10px; font-weight: 500; line-height: 1.35; margin-left: 4px; padding: 1px 5px; }
+    .note.block { display: block; margin: 4px 0 0; width: fit-content; }
+    .keywords { display: flex; flex-wrap: wrap; gap: 4px; }
+    .keywords span { background: var(--keyword-bg); border-radius: 5px; color: var(--ink); font-size: 10px; font-weight: 800; line-height: 1.15; padding: 3px 6px; }
+    .bars { display: grid; gap: 8px; }
+    .bar { display: grid; grid-template-columns: 68px 1fr 32px; gap: 8px; align-items: center; font-size: 12px; }
+    .track { height: 8px; border-radius: 999px; background: #e8ebf0; overflow: hidden; }
+    .track i { display: block; height: 100%; background: var(--accent); }
+    @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } .preview-wrap { position: static; } }
+    @media (max-width: 680px) { .grid, .grid.two, .wiki-grid { grid-template-columns: 1fr; } }
+  </style>
+  <style>input[type="color"]{cursor:pointer;height:38px;padding:3px}</style>
+</head>
+<body>
+<main>
+  <h1>Character Manager</h1>
+  <details class="tool-guide">
+    <summary>Basic workflow</summary>
+    <ol>
+      <li>Character file에 이름, 이미지, 색상을 입력합니다.</li>
+      <li>Add content에서 항목을 골라 내용을 추가합니다.</li>
+      <li>Current items에서 Edit, 위/아래 이동, 삭제로 정리합니다.</li>
+      <li>Preview를 확인하고 Save draft로 브라우저에 임시 저장합니다.</li>
+      <li>Copy 또는 Download한 Markdown을 repo의 <code>_characters</code> 폴더에 넣습니다.</li>
+    </ol>
+  </details>
+
+  <div class="layout">
+    <div>
+      <section class="panel">
+        <h2>Character file</h2>
+        <div class="grid">
+          <div><label for="title">Character name</label><input id="title" placeholder="Dietrich Schwartz"></div>
+          <div><label for="fileName">File name</label><input id="fileName" placeholder="dietrich-schwartz.md"></div>
+          <div><label for="order">Card order</label><input id="order" type="number" value="1"></div>
+          <div><label for="subtitle">Subtitle</label><input id="subtitle" placeholder="Optional subtitle"></div>
+          <div><label for="role">Small role text</label><input id="role" placeholder="Investigator"></div>
+          <div><label for="cardImage">Card image</label><input id="cardImage" placeholder="/noctea-characters/assets/characters/name/card.jpg"></div>
+          <div><label for="profileImage">Profile image</label><input id="profileImage" placeholder="/noctea-characters/assets/characters/name/profile.jpg"></div>
+<div><label for="accent">Accent</label><input id="accent" type="color" value="#4e4a65"></div>
+<div><label for="soft">Soft</label><input id="soft" type="color" value="#e7e3d8"></div>
+<div><label for="ink">Ink</label><input id="ink" type="color" value="#161732"></div>
+<div><label for="tabColor">Tab color</label><input id="tabColor" type="color" value="#4e4a65"></div>
+<div><label for="sectionText">Section text</label><input id="sectionText" type="color" value="#e7e3d8"></div>
+<div><label for="keywordBg">Keyword bg</label><input id="keywordBg" type="color" value="#e7e3d8"></div>
+        </div>
+        <div class="grid two">
+          <div><label for="draftName">Draft name</label><input id="draftName" placeholder="Dietrich, Katia..."></div>
+          <div><label for="draftSelect">Saved drafts</label><select id="draftSelect"></select></div>
+        </div>
+        <div class="actions">
+          <button id="saveDraftBtn" type="button">Save draft</button>
+          <button class="secondary" id="loadDraftBtn" type="button">Load selected</button>
+          <button class="danger" id="clearDraftBtn" type="button">Delete selected</button>
+        </div>
+        <div class="status" id="draftStatus"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Add content</h2>
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-tab="facts" type="button">Card facts</button>
+          <button class="tab" data-tab="profile" type="button">Profile</button>
+          <button class="tab" data-tab="keyword" type="button">Keywords</button>
+          <button class="tab" data-tab="details" type="button">Details</button>
+          <button class="tab" data-tab="status" type="button">Status</button>
+          <button class="tab" data-tab="story" type="button">Story</button>
+          <button class="tab" data-tab="memo" type="button">Memo</button>
+        </div>
+
+        <div class="builder-panel active" data-panel="facts">
+          <div class="grid two">
+            <div><label for="factLabel">Label</label><input id="factLabel" placeholder="Gender"></div>
+            <div><label for="factValue">Value</label><input id="factValue" placeholder="Male"></div>
+          </div>
+          <div class="actions"><button id="addFactBtn" type="button">Add card fact</button></div>
+          <p class="small">The first three facts appear on the Characters card. All facts appear below the portrait on the detail page.</p>
+        </div>
+
+        <div class="builder-panel" data-panel="profile">
+          <div class="grid two">
+            <div><label for="profileGroup">Section</label><input id="profileGroup" value="PROFILE" placeholder="PROFILE"></div>
+            <div><label for="profileLabel">Small label</label><input id="profileLabel" placeholder="Age"></div>
+            <div><label for="profileValue">Text</label><input id="profileValue" placeholder="25"></div>
+            <div><label for="profileNote">Small note</label><input id="profileNote" placeholder="Optional grey note"></div>
+            <div><label for="profileNoteBreak">Note placement</label><select id="profileNoteBreak"><option value="false">Inline</option><option value="true">New line</option></select></div>
+          </div>
+          <div class="actions"><button id="addProfileBtn" type="button">Add profile item</button></div>
+          <p class="small">Use any section name: NAME, PROFILE, KEYWORD, RELATIONSHIP, etc. The manager groups items with the same section name together.</p>
+        </div>
+
+        <div class="builder-panel" data-panel="keyword">
+          <div class="grid two">
+            <div><label for="keywordGroup">Section</label><input id="keywordGroup" value="KEYWORD"></div>
+            <div><label for="keywordValue">Keyword</label><input id="keywordValue" placeholder="calm"></div>
+          </div>
+          <div class="actions"><button id="addKeywordBtn" type="button">Add keyword</button></div>
+        </div>
+
+        <div class="builder-panel" data-panel="details">
+          <div class="grid two">
+            <div><label for="detailSectionTitle">Section title</label><input id="detailSectionTitle" placeholder="EMOTIONS, OUTFIT, CHARACTER..."></div>
+            <div><label for="detailTitle">Toggle title</label><input id="detailTitle" placeholder="Expression, OOTD, Appearance..."></div>
+            <div><label for="detailOpen">Default state</label><select id="detailOpen"><option value="false">Closed</option><option value="true">Open</option></select></div>
+          </div>
+          <label for="detailText">Text</label><textarea id="detailText" placeholder="Long profile detail text"></textarea>
+          <label for="detailImages">Images</label><textarea id="detailImages" placeholder="One image path per line&#10;/noctea-characters/assets/characters/name/image-01.jpg"></textarea>
+          <div class="actions"><button id="addDetailSectionBtn" class="soft" type="button">Add section title</button><button id="addDetailBtn" type="button">Add detail toggle</button></div>
+          <p class="small">Images are arranged in a tidy grid under the text. Keep one image path per line.</p>
+        </div>
+
+        <div class="builder-panel" data-panel="status">
+          <div class="grid two">
+            <div><label for="statLabel">Stat label</label><input id="statLabel" placeholder="POWER"></div>
+            <div><label for="statValue">Value 0-100</label><input id="statValue" type="number" min="0" max="100" value="50"></div>
+          </div>
+          <div class="actions"><button id="addStatBtn" type="button">Add status stat</button></div>
+        </div>
+
+        <div class="builder-panel" data-panel="story">
+          <div class="grid two">
+            <div><label for="storyDate">Date</label><input id="storyDate" placeholder="2026.06.19"></div>
+            <div><label for="storyTitle">Title</label><input id="storyTitle" placeholder="Timeline 1"></div>
+          </div>
+          <label for="storyText">Text</label><textarea id="storyText" placeholder="Story text"></textarea>
+          <div class="actions"><button id="addStoryBtn" type="button">Add story item</button></div>
+        </div>
+
+        <div class="builder-panel" data-panel="au" hidden>
+          <div class="grid two">
+            <div><label for="auTitle">AU title</label><input id="auTitle" placeholder="Modern AU, Fantasy AU..."></div>
+            <div><label for="auSubtitle">AU subtitle</label><input id="auSubtitle" placeholder="Optional small label"></div>
+            <div><label for="auImage">AU image</label><input id="auImage" placeholder="/noctea-characters/assets/characters/name/au.jpg"></div>
+            <div><label for="auSummary">Card summary</label><input id="auSummary" placeholder="Short card description"></div>
+          </div>
+          <label for="auFacts">AU card facts</label>
+          <textarea id="auFacts" placeholder="Gender|Female&#10;Age|34&#10;Job|Researcher"></textarea>
+          <label for="auProfile">AU profile rows</label>
+          <textarea id="auProfile" placeholder="PROFILE|Name|Katia Feltroof|optional note&#10;PROFILE|Job|Researcher&#10;RELATIONSHIP|Partner|..."></textarea>
+          <label for="auKeywords">AU keywords</label>
+          <textarea id="auKeywords" placeholder="KEYWORD|quiet&#10;KEYWORD|researcher"></textarea>
+          <label for="auDetails">AU details</label>
+          <textarea id="auDetails" placeholder="section|OUTFIT&#10;toggle|OOTD|open&#10;text|Long detail text here&#10;image|/noctea-characters/assets/characters/name/ootd.jpg&#10;---&#10;toggle|Expression&#10;text|Another detail"></textarea>
+          <p class="small">AU details format: section|TITLE, toggle|TITLE|open, text|TEXT, image|PATH. Use --- to start another toggle block.</p>
+          <div class="actions"><button id="addAuBtn" type="button">Add AU card</button></div>
+        </div>
+
+        <div class="builder-panel" data-panel="memo">
+          <div class="grid two">
+            <div><label for="memoDate">Date</label><input id="memoDate" placeholder="2026.06.19"></div>
+            <div><label for="memoTextShort">Short title</label><input id="memoTextShort" placeholder="Optional"></div>
+          </div>
+          <label for="memoText">Text</label><textarea id="memoText" placeholder="Memo text"></textarea>
+          <div class="actions"><button id="addMemoBtn" type="button">Add memo item</button></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Current items</h2>
+        <div class="list" id="itemList"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Output</h2>
+        <textarea class="output" id="output" spellcheck="false"></textarea>
+        <div class="actions">
+          <button id="buildBtn" type="button">Refresh output</button>
+          <button class="secondary" id="copyBtn" type="button">Copy Markdown</button>
+          <button class="secondary" id="downloadBtn" type="button">Download .md</button>
+        </div>
+        <div class="status" id="status"></div>
+      </section>
+    </div>
+
+    <aside class="preview-wrap">
+      <section class="panel">
+        <h2>Preview</h2>
+        <div id="preview"></div>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<script>
+var STORAGE_KEY = 'dekade-character-manager-drafts-v2';
+var data = { facts: [], groups: [], details: [], stats: [], story: [], memo: [], aus: [] };
+var editing = null;
+var fields = ['title','fileName','order','subtitle','role','cardImage','profileImage','accent','soft','ink','tabColor','sectionText','keywordBg'];
+function el(id) { return document.getElementById(id); }
+function val(id) { return el(id).value.trim(); }
+function setVal(id, value) { el(id).value = value || ''; }function setActiveTab(name) {
+  document.querySelectorAll('.tab').forEach(function (tab) { tab.classList.toggle('active', tab.dataset.tab === name); });
+  document.querySelectorAll('.builder-panel').forEach(function (panel) { panel.classList.toggle('active', panel.dataset.panel === name); });
+  renderPreview();
+}
+function resetEditButtons() {
+  var labels = {
+    addFactBtn: 'Add card fact',
+    addProfileBtn: 'Add profile item',
+    addKeywordBtn: 'Add keyword',
+    addDetailSectionBtn: 'Add section title',
+    addDetailBtn: 'Add detail toggle',
+    addStatBtn: 'Add status stat',
+    addStoryBtn: 'Add story item',
+    addAuBtn: 'Add AU card',
+    addMemoBtn: 'Add memo item'
+  };
+  Object.keys(labels).forEach(function (id) { if (el(id)) el(id).textContent = labels[id]; });
+}
+function beginEdit(kind, a, b) {
+  editing = { kind: kind, a: a, b: b };
+  resetEditButtons();
+}
+function finishEdit(message) {
+  editing = null;
+  resetEditButtons();
+  updateAll(message || 'Updated.');
+}
+function splitRows(items, formatter) {
+  return (items || []).map(formatter).join('\n');
+}
+function detailsToText(details) {
+  return (details || []).map(function (detail) {
+    if (detail.type === 'section') return 'section|' + (detail.title || 'SECTION');
+    var lines = ['toggle|' + (detail.title || 'Detail') + (detail.open ? '|open' : '')];
+    if (detail.text) String(detail.text).split(/\r?\n/).forEach(function (line) { lines.push('text|' + line); });
+    (detail.images || []).forEach(function (image) { lines.push('image|' + image); });
+    return lines.join('\n');
+  }).join('\n---\n');
+}
+function escapeHtml(value) { return String(value || '').replace(/[&<>"']/g, function (ch) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]); }); }
+function quoteYaml(value) { return '"' + String(value || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\r?\n/g, '\\n') + '"'; }
+function slugify(value) {
+  return String(value || 'character').trim().toLowerCase().replace(/[^a-z0-9\uAC00-\uD7A3]+/g, '-').replace(/^-+|-+$/g, '') || 'character';
+}
+function getMeta() {
+  var title = val('title') || 'New Character';
+  var fileName = val('fileName') || slugify(title) + '.md';
+  if (!/\.md$/i.test(fileName)) fileName += '.md';
+  return {
+    title: title,
+    fileName: fileName,
+    order: parseInt(val('order'), 10) || 1,
+    subtitle: val('subtitle'),
+    role: val('role'),
+    cardImage: val('cardImage'),
+    profileImage: val('profileImage'),
+    accent: val('accent') || '#4e4a65',
+    soft: val('soft') || '#e7e3d8',
+    ink: val('ink') || '#161732',
+    tabColor: val('tabColor') || val('accent') || '#4e4a65',
+    sectionText: val('sectionText') || val('soft') || '#e7e3d8',
+    keywordBg: val('keywordBg') || val('soft') || '#e7e3d8'
+  };
+}
+function findGroup(title, style) {
+  title = title || 'PROFILE';
+  var group = data.groups.find(function (item) { return item.title === title && (item.style || '') === (style || ''); });
+  if (!group) {
+    group = { title: title, style: style || '', items: [] };
+    data.groups.push(group);
+  }
+  return group;
+}
+function addFact() {
+  var label = val('factLabel');
+  var value = val('factValue');
+  if (!label && !value) return;
+  var item = { label: label || 'Label', value: value };
+  if (editing && editing.kind === 'fact') {
+    data.facts[editing.a] = item;
+    setVal('factLabel', ''); setVal('factValue', '');
+    finishEdit('Updated card fact.');
+    return;
+  }
+  data.facts.push(item);
+  setVal('factLabel', ''); setVal('factValue', '');
+  updateAll('Added card fact.');
+}function addProfile() {
+  var groupTitle = val('profileGroup') || 'PROFILE';
+  var group = findGroup(groupTitle, '');
+  var label = val('profileLabel');
+  var value = val('profileValue');
+  var note = val('profileNote');
+  if (!label && !value && !note) return;
+  var item = { label: label || 'Item', value: value, note: note, note_break: val('profileNoteBreak') === 'true' };
+  if (editing && editing.kind === 'groupItem') {
+    var oldGroup = data.groups[editing.a];
+    if (oldGroup && oldGroup.title === groupTitle && (oldGroup.style || '') === '') {
+      oldGroup.items[editing.b] = item;
+    } else {
+      if (oldGroup) {
+        oldGroup.items.splice(editing.b, 1);
+        if (!oldGroup.items.length) data.groups.splice(editing.a, 1);
+      }
+      group.items.push(item);
+    }
+    setVal('profileLabel', ''); setVal('profileValue', ''); setVal('profileNote', ''); el('profileNoteBreak').value = 'false';
+    finishEdit('Updated profile item.');
+    return;
+  }
+  group.items.push(item);
+  setVal('profileLabel', ''); setVal('profileValue', ''); setVal('profileNote', ''); el('profileNoteBreak').value = 'false';
+  updateAll('Added profile item.');
+}function addKeyword() {
+  var value = val('keywordValue');
+  if (!value) return;
+  var groupTitle = val('keywordGroup') || 'KEYWORD';
+  var group = findGroup(groupTitle, 'keywords');
+  var item = { value: value };
+  if (editing && editing.kind === 'groupItem') {
+    var oldGroup = data.groups[editing.a];
+    if (oldGroup && oldGroup.title === groupTitle && oldGroup.style === 'keywords') {
+      oldGroup.items[editing.b] = item;
+    } else {
+      if (oldGroup) {
+        oldGroup.items.splice(editing.b, 1);
+        if (!oldGroup.items.length) data.groups.splice(editing.a, 1);
+      }
+      group.items.push(item);
+    }
+    setVal('keywordValue', '');
+    finishEdit('Updated keyword.');
+    return;
+  }
+  group.items.push(item);
+  setVal('keywordValue', '');
+  updateAll('Added keyword.');
+}function addDetailSection() {
+  var title = val('detailSectionTitle') || 'SECTION';
+  var item = { type: 'section', title: title };
+  if (editing && editing.kind === 'detail') {
+    data.details[editing.a] = item;
+    setVal('detailSectionTitle', '');
+    finishEdit('Updated detail section title.');
+    return;
+  }
+  data.details.push(item);
+  setVal('detailSectionTitle', '');
+  updateAll('Added detail section title.');
+}function addDetail() {
+  var title = val('detailTitle') || 'Detail';
+  var text = val('detailText');
+  var images = el('detailImages').value.split(/\r?\n/).map(function (line) { return line.trim(); }).filter(Boolean);
+  if (!title && !text && !images.length) return;
+  var item = { title: title, text: text, images: images, open: val('detailOpen') === 'true' };
+  if (editing && editing.kind === 'detail') {
+    data.details[editing.a] = item;
+    setVal('detailTitle', ''); setVal('detailText', ''); setVal('detailImages', ''); el('detailOpen').value = 'false';
+    finishEdit('Updated detail toggle.');
+    return;
+  }
+  data.details.push(item);
+  setVal('detailTitle', ''); setVal('detailText', ''); setVal('detailImages', ''); el('detailOpen').value = 'false';
+  updateAll('Added detail toggle.');
+}function addStat() {
+  var label = val('statLabel');
+  var value = parseInt(val('statValue'), 10);
+  if (!label) return;
+  if (isNaN(value)) value = 50;
+  var item = { label: label, value: Math.max(0, Math.min(100, value)) };
+  if (editing && editing.kind === 'stat') {
+    data.stats[editing.a] = item;
+    setVal('statLabel', ''); setVal('statValue', '50');
+    finishEdit('Updated status stat.');
+    return;
+  }
+  data.stats.push(item);
+  setVal('statLabel', ''); setVal('statValue', '50');
+  updateAll('Added status stat.');
+}function addStory() {
+  var text = val('storyText');
+  if (!text && !val('storyTitle')) return;
+  var item = { date: val('storyDate'), title: val('storyTitle') || 'Timeline', text: text };
+  if (editing && editing.kind === 'story') {
+    data.story[editing.a] = item;
+    setVal('storyDate', ''); setVal('storyTitle', ''); setVal('storyText', '');
+    finishEdit('Updated story item.');
+    return;
+  }
+  data.story.push(item);
+  setVal('storyDate', ''); setVal('storyTitle', ''); setVal('storyText', '');
+  updateAll('Added story item.');
+}function parsePipeRows(raw, fallbackSection) {
+  var groups = [];
+  function getGroup(title, style) {
+    title = title || fallbackSection || 'PROFILE';
+    var group = groups.find(function (item) { return item.title === title && (item.style || '') === (style || ''); });
+    if (!group) { group = { title: title, style: style || '', items: [] }; groups.push(group); }
+    return group;
+  }
+  String(raw || '').split(/\r?\n/).forEach(function (line) {
+    line = line.trim();
+    if (!line) return;
+    var parts = line.split('|').map(function (part) { return part.trim(); });
+    if (parts.length === 2) getGroup(fallbackSection || 'PROFILE', '').items.push({ label: parts[0], value: parts[1] });
+    else getGroup(parts[0] || fallbackSection || 'PROFILE', '').items.push({ label: parts[1] || 'Item', value: parts[2] || '', note: parts[3] || '', note_break: (parts[4] || '').toLowerCase() === 'break' });
+  });
+  return groups;
+}
+function parseFacts(raw) {
+  return String(raw || '').split(/\r?\n/).map(function (line) {
+    var parts = line.split('|');
+    return { label: (parts[0] || '').trim(), value: parts.slice(1).join('|').trim() };
+  }).filter(function (item) { return item.label || item.value; });
+}
+function parseKeywords(raw) {
+  var groups = [];
+  String(raw || '').split(/\r?\n/).forEach(function (line) {
+    line = line.trim();
+    if (!line) return;
+    var parts = line.split('|').map(function (part) { return part.trim(); });
+    var title = parts.length > 1 ? parts[0] : 'KEYWORD';
+    var value = parts.length > 1 ? parts.slice(1).join('|') : parts[0];
+    var group = groups.find(function (item) { return item.title === title && item.style === 'keywords'; });
+    if (!group) { group = { title: title, style: 'keywords', items: [] }; groups.push(group); }
+    group.items.push({ value: value });
+  });
+  return groups;
+}
+function parseDetailBlocks(raw) {
+  var details = [];
+  var current = null;
+  String(raw || '').split(/\r?\n/).forEach(function (line) {
+    var trimmed = line.trim();
+    if (!trimmed) return;
+    if (trimmed === '---') { current = null; return; }
+    var parts = trimmed.split('|');
+    var kind = (parts.shift() || '').trim().toLowerCase();
+    if (kind === 'section') { details.push({ type: 'section', title: parts.join('|').trim() || 'SECTION' }); current = null; return; }
+    if (kind === 'toggle') { current = { title: (parts[0] || 'Detail').trim(), open: (parts[1] || '').trim().toLowerCase() === 'open', text: '', images: [] }; details.push(current); return; }
+    if (!current) { current = { title: 'Detail', text: '', images: [] }; details.push(current); }
+    if (kind === 'text') current.text += (current.text ? '\n' : '') + parts.join('|').trim();
+    if (kind === 'image') current.images.push(parts.join('|').trim());
+  });
+  return details;
+}
+function addAu() {
+  var title = val('auTitle') || 'New AU';
+  var groups = parsePipeRows(el('auProfile').value, 'PROFILE').concat(parseKeywords(el('auKeywords').value));
+  var item = {
+    title: title,
+    subtitle: val('auSubtitle'),
+    image: val('auImage'),
+    summary: val('auSummary'),
+    facts: parseFacts(el('auFacts').value),
+    groups: groups,
+    details: parseDetailBlocks(el('auDetails').value)
+  };
+  if (editing && editing.kind === 'au') {
+    data.aus[editing.a] = item;
+    ['auTitle','auSubtitle','auImage','auSummary','auFacts','auProfile','auKeywords','auDetails'].forEach(function (id) { setVal(id, ''); });
+    finishEdit('Updated AU card.');
+    return;
+  }
+  data.aus.push(item);
+  ['auTitle','auSubtitle','auImage','auSummary','auFacts','auProfile','auKeywords','auDetails'].forEach(function (id) { setVal(id, ''); });
+  updateAll('Added AU card.');
+}function addMemo() {
+  var text = val('memoText') || val('memoTextShort');
+  if (!text) return;
+  var item = { date: val('memoDate'), text: text };
+  if (editing && editing.kind === 'memo') {
+    data.memo[editing.a] = item;
+    setVal('memoDate', ''); setVal('memoTextShort', ''); setVal('memoText', '');
+    finishEdit('Updated memo item.');
+    return;
+  }
+  data.memo.push(item);
+  setVal('memoDate', ''); setVal('memoTextShort', ''); setVal('memoText', '');
+  updateAll('Added memo item.');
+}function removeItem(type, groupIndex, itemIndex) {
+  if (type === 'fact') data.facts.splice(groupIndex, 1);
+  if (type === 'detail') data.details.splice(groupIndex, 1);
+  if (type === 'stat') data.stats.splice(groupIndex, 1);
+  if (type === 'story') data.story.splice(groupIndex, 1);
+  if (type === 'memo') data.memo.splice(groupIndex, 1);
+  if (type === 'au') data.aus.splice(groupIndex, 1);
+  if (type === 'groupItem') {
+    data.groups[groupIndex].items.splice(itemIndex, 1);
+    if (!data.groups[groupIndex].items.length) data.groups.splice(groupIndex, 1);
+  }
+  if (editing && editing.kind === type && editing.a === groupIndex) editing = null;
+  resetEditButtons();
+  updateAll('Removed.');
+}
+function swapInArray(arr, index, dir) {
+  var next = index + dir;
+  if (!arr || next < 0 || next >= arr.length) return false;
+  var item = arr.splice(index, 1)[0];
+  arr.splice(next, 0, item);
+  return true;
+}
+function moveItem(type, a, b, dir) {
+  var moved = false;
+  if (type === 'fact') moved = swapInArray(data.facts, a, dir);
+  if (type === 'detail') moved = swapInArray(data.details, a, dir);
+  if (type === 'stat') moved = swapInArray(data.stats, a, dir);
+  if (type === 'story') moved = swapInArray(data.story, a, dir);
+  if (type === 'memo') moved = swapInArray(data.memo, a, dir);
+  if (type === 'au') moved = swapInArray(data.aus, a, dir);
+  if (type === 'groupItem' && data.groups[a]) moved = swapInArray(data.groups[a].items, b, dir);
+  if (moved) updateAll('Moved.');
+}
+function startEdit(type, a, b) {
+  resetEditButtons();
+  if (type === 'fact') {
+    var fact = data.facts[a]; if (!fact) return;
+    beginEdit('fact', a, null); setActiveTab('facts'); setVal('factLabel', fact.label); setVal('factValue', fact.value); el('addFactBtn').textContent = 'Update card fact';
+  }
+  if (type === 'groupItem') {
+    var group = data.groups[a]; if (!group) return;
+    var item = group.items[b]; if (!item) return;
+    beginEdit('groupItem', a, b);
+    if (group.style === 'keywords') { setActiveTab('keyword'); setVal('keywordGroup', group.title); setVal('keywordValue', item.value); el('addKeywordBtn').textContent = 'Update keyword'; }
+    else { setActiveTab('profile'); setVal('profileGroup', group.title); setVal('profileLabel', item.label); setVal('profileValue', item.value); setVal('profileNote', item.note); el('profileNoteBreak').value = item.note_break ? 'true' : 'false'; el('addProfileBtn').textContent = 'Update profile item'; }
+  }
+  if (type === 'detail') {
+    var detail = data.details[a]; if (!detail) return;
+    beginEdit('detail', a, null); setActiveTab('details');
+    if (detail.type === 'section') { setVal('detailSectionTitle', detail.title); el('addDetailSectionBtn').textContent = 'Update section title'; }
+    else { setVal('detailTitle', detail.title); setVal('detailText', detail.text); setVal('detailImages', (detail.images || []).join('\n')); el('detailOpen').value = detail.open ? 'true' : 'false'; el('addDetailBtn').textContent = 'Update detail toggle'; }
+  }
+  if (type === 'stat') {
+    var stat = data.stats[a]; if (!stat) return;
+    beginEdit('stat', a, null); setActiveTab('status'); setVal('statLabel', stat.label); setVal('statValue', stat.value); el('addStatBtn').textContent = 'Update status stat';
+  }
+  if (type === 'story') {
+    var story = data.story[a]; if (!story) return;
+    beginEdit('story', a, null); setActiveTab('story'); setVal('storyDate', story.date); setVal('storyTitle', story.title); setVal('storyText', story.text); el('addStoryBtn').textContent = 'Update story item';
+  }
+  if (type === 'au') {
+    var au = data.aus[a]; if (!au) return;
+    beginEdit('au', a, null); setActiveTab('au'); setVal('auTitle', au.title); setVal('auSubtitle', au.subtitle); setVal('auImage', au.image); setVal('auSummary', au.summary);
+    setVal('auFacts', splitRows(au.facts, function (fact) { return fact.label + '|' + fact.value; }));
+    var normalGroups = (au.groups || []).filter(function (group) { return group.style !== 'keywords'; });
+    var keywordGroups = (au.groups || []).filter(function (group) { return group.style === 'keywords'; });
+    setVal('auProfile', normalGroups.map(function (group) { return group.items.map(function (item) { return group.title + '|' + item.label + '|' + item.value + (item.note ? '|' + item.note : '') + (item.note_break ? '|break' : ''); }).join('\n'); }).filter(Boolean).join('\n'));
+    setVal('auKeywords', keywordGroups.map(function (group) { return group.items.map(function (item) { return group.title + '|' + item.value; }).join('\n'); }).filter(Boolean).join('\n'));
+    setVal('auDetails', detailsToText(au.details)); el('addAuBtn').textContent = 'Update AU card';
+  }
+  if (type === 'memo') {
+    var memo = data.memo[a]; if (!memo) return;
+    beginEdit('memo', a, null); setActiveTab('memo'); setVal('memoDate', memo.date); setVal('memoText', memo.text); el('addMemoBtn').textContent = 'Update memo item';
+  }
+  el('status').textContent = 'Editing selected item. Update it from the opened panel.';
+}
+function renderItems() {
+  var list = el('itemList');
+  var html = '';
+  var tab = getActiveBuilderTab();
+  if (tab === 'facts') {
+    data.facts.forEach(function (item, index) { html += renderItem('Card fact', item.label + ' | ' + item.value, 'fact', index); });
+  }
+  if (tab === 'profile' || tab === 'keyword') {
+    data.groups.forEach(function (group, groupIndex) {
+      if (tab === 'profile' && group.style === 'keywords') return;
+      if (tab === 'keyword' && group.style !== 'keywords') return;
+      group.items.forEach(function (item, itemIndex) {
+        var body = group.style === 'keywords' ? item.value : item.label + ' | ' + item.value + (item.note ? ' (' + item.note + ')' : '');
+        html += renderItem(group.title, body, 'groupItem', groupIndex, itemIndex);
+      });
+    });
+  }
+  if (tab === 'details') {
+    data.details.forEach(function (item, index) { html += renderItem(item.type === 'section' ? 'Detail section' : 'Detail', item.title + (item.images && item.images.length ? ' | images: ' + item.images.length : ''), 'detail', index); });
+  }
+  if (tab === 'status') {
+    data.stats.forEach(function (item, index) { html += renderItem('Status', item.label + ' | ' + item.value, 'stat', index); });
+  }
+  if (tab === 'story') {
+    data.story.forEach(function (item, index) { html += renderItem('Story', (item.date ? item.date + ' | ' : '') + item.title, 'story', index); });
+  }
+  if (tab === 'au') {
+    data.aus.forEach(function (item, index) { html += renderItem('AU', item.title + (item.subtitle ? ' | ' + item.subtitle : ''), 'au', index); });
+  }
+  if (tab === 'memo') {
+    data.memo.forEach(function (item, index) { html += renderItem('Memo', (item.date ? item.date + ' | ' : '') + item.text, 'memo', index); });
+  }
+  list.innerHTML = html || '<p class="small">No items in this tab yet.</p>';
+}
+function renderItem(label, body, type, a, b) {
+  var bValue = b == null ? '' : b;
+  return '<div class="item"><div class="item-head"><div><div class="item-title">' + escapeHtml(label) + '</div><div class="small">' + escapeHtml(body) + '</div></div><div class="mini-actions"><button type="button" data-move="up" data-type="' + type + '" data-a="' + a + '" data-b="' + bValue + '">Up</button><button type="button" data-move="down" data-type="' + type + '" data-a="' + a + '" data-b="' + bValue + '">Down</button><button type="button" data-edit="' + type + '" data-a="' + a + '" data-b="' + bValue + '">Edit</button><button type="button" data-remove="' + type + '" data-a="' + a + '" data-b="' + bValue + '">Remove</button></div></div></div>';
+}function previewImageSrc(src) {
+  src = String(src || '').trim();
+  if (!src) return '';
+  if (/^(https?:|data:|blob:)/i.test(src)) return src;
+  if (location.protocol === 'file:') {
+    if (src.indexOf('/noctea-characters/') === 0) return '../' + src.replace(/^\/noctea-characters\//, '');
+    if (src.indexOf('/assets/') === 0) return '..' + src;
+    if (src.indexOf('assets/') === 0) return '../' + src;
+  }
+  return src;
+}
+function imageHtml(src, fallback) {
+  var previewSrc = previewImageSrc(src);
+  if (previewSrc) return '<img src="' + escapeHtml(previewSrc) + '" alt="">';
+  return escapeHtml((fallback || 'C').slice(0, 1));
+}
+function getActiveBuilderTab() {
+  var active = document.querySelector('.tab.active');
+  return active ? active.dataset.tab : 'facts';
+}
+function renderFactsHtml(facts) {
+  return (facts || []).map(function (fact) {
+    return '<div><dt>' + escapeHtml(fact.label) + '</dt><dd>' + escapeHtml(fact.value) + '</dd></div>';
+  }).join('');
+}
+function renderGroupsHtml(groups) {
+  return (groups || []).map(function (group) {
+    if (group.style === 'keywords') {
+      return '<div class="section-title">' + escapeHtml(group.title) + '</div><div class="keywords">' + group.items.map(function (item) { return '<span>' + escapeHtml(item.value) + '</span>'; }).join('') + '</div>';
+    }
+    return '<div class="section-title">' + escapeHtml(group.title) + '</div><dl class="info-list">' + group.items.map(function (item) { return '<div><dt>' + escapeHtml(item.label) + '</dt><dd>' + escapeHtml(item.value) + (item.note ? '<span class="note' + (item.note_break ? ' block' : '') + '">' + escapeHtml(item.note) + '</span>' : '') + '</dd></div>'; }).join('') + '</dl>';
+  }).join('');
+}
+function renderDetailsHtml(details, title) {
+  if (!details || !details.length) return '<div class="wiki-preview"><div class="section-title">' + escapeHtml(title || 'Details') + '</div><p class="small">No detail toggles yet.</p></div>';
+  return '<div class="wiki-preview"><div class="section-title">' + escapeHtml(title || 'Details') + '</div>' + details.map(function (detail) {
+    var images = (detail.images || []).map(function (src) { return '<div class="portrait">' + imageHtml(src, '') + '</div>'; }).join('');
+    if (detail.type === 'section') return '<div class="section-title">' + escapeHtml(detail.title) + '</div>';
+    return '<details ' + (detail.open ? 'open' : '') + '><summary class="item-title">' + escapeHtml(detail.title) + '</summary><div class="small" style="margin:.5rem 0; white-space:pre-wrap">' + escapeHtml(detail.text || '') + '</div>' + (images ? '<div class="wiki-grid" style="grid-template-columns:repeat(auto-fit,minmax(90px,1fr))">' + images + '</div>' : '') + '</details>';
+  }).join('') + '</div>';
+}
+function renderStatsHtml() {
+  if (!data.stats.length) return '<div class="wiki-preview"><div class="section-title">Status</div><p class="small">No status stats yet.</p></div>';
+  return '<div class="wiki-preview"><div class="section-title">Status</div><div class="bars">' + data.stats.map(function (stat) { return '<div class="bar"><span>' + escapeHtml(stat.label) + '</span><div class="track"><i style="width:' + stat.value + '%"></i></div><strong>' + stat.value + '</strong></div>'; }).join('') + '</div></div>';
+}
+function renderStoryHtml() {
+  if (!data.story.length) return '<div class="wiki-preview"><div class="section-title">Story</div><p class="small">No story items yet.</p></div>';
+  return '<div class="wiki-preview"><div class="section-title">Story</div>' + data.story.map(function (item) { return '<div class="item"><div class="small">' + escapeHtml(item.date || '') + '</div><div class="item-title">' + escapeHtml(item.title) + '</div><div class="small" style="white-space:pre-wrap">' + escapeHtml(item.text) + '</div></div>'; }).join('') + '</div>';
+}
+function renderMemoHtml() {
+  if (!data.memo.length) return '<div class="wiki-preview"><div class="section-title">Memo</div><p class="small">No memo items yet.</p></div>';
+  return '<div class="wiki-preview"><div class="section-title">Memo</div>' + data.memo.map(function (item) { return '<div class="item"><div class="small">' + escapeHtml(item.date || '') + '</div><div class="small" style="white-space:pre-wrap">' + escapeHtml(item.text) + '</div></div>'; }).join('') + '</div>';
+}
+function renderAuHtml() {
+  if (!data.aus.length) return '<div class="wiki-preview"><div class="section-title">AU</div><p class="small">No AU cards yet.</p></div>';
+  var cards = '<div class="wiki-preview"><div class="section-title">AU gallery</div><div class="wiki-grid" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr))">' + data.aus.map(function (au) {
+    return '<div class="preview-card"><div class="preview-card-img">' + imageHtml(au.image, au.title) + '</div><div class="preview-card-body"><p class="preview-role">' + escapeHtml(au.subtitle || 'AU') + '</p><h3>' + escapeHtml(au.title) + '</h3><p class="small">' + escapeHtml(au.summary || '') + '</p></div></div>';
+  }).join('') + '</div></div>';
+  var au = data.aus[data.aus.length - 1];
+  var facts = au.facts && au.facts.length ? au.facts : [{ label: 'Info', value: '' }];
+  var meta = getMeta();
+  var detail = '<div class="wiki-preview"><div class="section-title">Latest AU detail</div><div class="wiki-grid"><div><div class="portrait">' + imageHtml(au.image || meta.profileImage || meta.cardImage, au.title) + '</div><dl class="preview-facts" style="margin-top:10px">' + renderFactsHtml(facts) + '</dl></div><div>' + (renderGroupsHtml(au.groups) || '<p class="small">No AU profile rows yet.</p>') + '</div></div></div>' + renderDetailsHtml(au.details, 'AU details');
+  return cards + detail;
+}
+function renderProfileHtml(meta, facts, groups) {
+  return '<div class="wiki-preview"><div class="section-title">Profile</div><div class="wiki-grid"><div><div class="portrait">' + imageHtml(meta.profileImage || meta.cardImage, meta.title) + '</div><dl class="preview-facts" style="margin-top:10px">' + renderFactsHtml(facts) + '</dl></div><div>' + (groups || '<p class="small">Add profile items to preview the wiki box.</p>') + '</div></div></div>' + renderDetailsHtml(data.details, 'Profile details');
+}
+function renderPreview() {
+  var meta = getMeta();
+  document.documentElement.style.setProperty('--accent', meta.accent);
+  document.documentElement.style.setProperty('--soft', meta.soft);
+  document.documentElement.style.setProperty('--ink', meta.ink);
+  document.documentElement.style.setProperty('--tab-color', meta.tabColor);
+  document.documentElement.style.setProperty('--section-text', meta.sectionText);
+  document.documentElement.style.setProperty('--keyword-bg', meta.keywordBg);
+  var facts = data.facts.length ? data.facts : [{label:'Gender',value:''},{label:'Age',value:''},{label:'Height',value:''}];
+  var cardFacts = renderFactsHtml(facts.slice(0, 3));
+  var groups = renderGroupsHtml(data.groups);
+  var activeTab = getActiveBuilderTab();
+  var card = '<div class="preview-card"><div class="preview-card-img">' + imageHtml(meta.cardImage, meta.title) + '</div><div class="preview-card-body"><p class="preview-role">' + escapeHtml(meta.role || 'Role') + '</p><h3>' + escapeHtml(meta.title) + '</h3><dl class="preview-facts">' + cardFacts + '</dl></div></div>';
+  var body = '';
+  if (activeTab === 'facts') body = card + renderProfileHtml(meta, facts, groups);
+  if (activeTab === 'profile' || activeTab === 'keyword') body = renderProfileHtml(meta, facts, groups);
+  if (activeTab === 'details') body = renderDetailsHtml(data.details, 'Profile details');
+  if (activeTab === 'status') body = renderStatsHtml();
+  if (activeTab === 'story') body = renderStoryHtml();
+  if (activeTab === 'au') body = renderAuHtml();
+  if (activeTab === 'memo') body = renderMemoHtml();
+  el('preview').innerHTML = body || card;
+}function buildMarkdown() {
+  var meta = getMeta();
+  var lines = ['---'];
+  lines.push('layout: character');
+  lines.push('title: ' + quoteYaml(meta.title));
+  lines.push('subtitle: ' + quoteYaml(meta.subtitle));
+  lines.push('order: ' + meta.order);
+  lines.push('role: ' + quoteYaml(meta.role));
+  lines.push('accent: ' + quoteYaml(meta.accent));
+  lines.push('soft: ' + quoteYaml(meta.soft));
+  lines.push('ink: ' + quoteYaml(meta.ink));
+  lines.push('tab_color: ' + quoteYaml(meta.tabColor));
+  lines.push('section_text: ' + quoteYaml(meta.sectionText));
+  lines.push('keyword_bg: ' + quoteYaml(meta.keywordBg));
+  lines.push('card_image: ' + quoteYaml(meta.cardImage));
+  lines.push('profile_image: ' + quoteYaml(meta.profileImage));
+  lines.push('card_facts:');
+  (data.facts.length ? data.facts : [{label:'Gender',value:''},{label:'Age',value:''},{label:'Height',value:''}]).forEach(function (fact) {
+    lines.push('  - label: ' + quoteYaml(fact.label));
+    lines.push('    value: ' + quoteYaml(fact.value));
+  });
+  if (data.groups.length) {
+    lines.push('profile_groups:');
+    data.groups.forEach(function (group) {
+      lines.push('  - title: ' + quoteYaml(group.title));
+      if (group.style) lines.push('    style: ' + quoteYaml(group.style));
+      lines.push('    items:');
+      group.items.forEach(function (item) {
+        if (group.style === 'keywords') {
+          lines.push('      - value: ' + quoteYaml(item.value));
+        } else {
+          lines.push('      - label: ' + quoteYaml(item.label));
+          lines.push('        value: ' + quoteYaml(item.value));
+          if (item.note) lines.push('        note: ' + quoteYaml(item.note)); if (item.note_break) lines.push('        note_break: true');
+        }
+      });
+    });
+  }
+  if (data.details.length) {
+    lines.push('profile_details:');
+    data.details.forEach(function (detail) {
+      lines.push('  - title: ' + quoteYaml(detail.title));
+      if (detail.type === 'section') {
+        lines.push('    type: "section"');
+        return;
+      }
+      if (detail.open) lines.push('    open: true');
+      lines.push('    text: ' + quoteYaml(detail.text));
+      if (detail.images && detail.images.length) {
+        lines.push('    images:');
+        detail.images.forEach(function (image) { lines.push('      - ' + quoteYaml(image)); });
+      }
+    });
+  }
+  if (data.stats.length) {
+    lines.push('stats:');
+    data.stats.forEach(function (stat) { lines.push('  - label: ' + quoteYaml(stat.label)); lines.push('    value: ' + stat.value); });
+  }
+  if (data.story.length) {
+    lines.push('story:');
+    data.story.forEach(function (item) { lines.push('  - date: ' + quoteYaml(item.date)); lines.push('    title: ' + quoteYaml(item.title)); lines.push('    text: ' + quoteYaml(item.text)); });
+  }
+  if (data.aus.length) {
+    lines.push('aus:');
+    data.aus.forEach(function (au) {
+      lines.push('  - title: ' + quoteYaml(au.title));
+      if (au.subtitle) lines.push('    subtitle: ' + quoteYaml(au.subtitle));
+      if (au.image) lines.push('    image: ' + quoteYaml(au.image));
+      if (au.summary) lines.push('    summary: ' + quoteYaml(au.summary));
+      if (au.facts && au.facts.length) {
+        lines.push('    facts:');
+        au.facts.forEach(function (fact) { lines.push('      - label: ' + quoteYaml(fact.label)); lines.push('        value: ' + quoteYaml(fact.value)); });
+      }
+      if (au.groups && au.groups.length) {
+        lines.push('    groups:');
+        au.groups.forEach(function (group) {
+          lines.push('      - title: ' + quoteYaml(group.title));
+          if (group.style) lines.push('        style: ' + quoteYaml(group.style));
+          lines.push('        items:');
+          group.items.forEach(function (item) {
+            if (group.style === 'keywords') lines.push('          - value: ' + quoteYaml(item.value));
+            else { lines.push('          - label: ' + quoteYaml(item.label)); lines.push('            value: ' + quoteYaml(item.value)); if (item.note) lines.push('            note: ' + quoteYaml(item.note)); if (item.note_break) lines.push('            note_break: true'); }
+          });
+        });
+      }
+      if (au.details && au.details.length) {
+        lines.push('    details:');
+        au.details.forEach(function (detail) {
+          lines.push('      - title: ' + quoteYaml(detail.title));
+          if (detail.type === 'section') { lines.push('        type: "section"'); return; }
+          if (detail.open) lines.push('        open: true');
+          lines.push('        text: ' + quoteYaml(detail.text));
+          if (detail.images && detail.images.length) { lines.push('        images:'); detail.images.forEach(function (image) { lines.push('          - ' + quoteYaml(image)); }); }
+        });
+      }
+    });
+  }
+  if (data.memo.length) {
+    lines.push('memo:');
+    data.memo.forEach(function (item) { lines.push('  - date: ' + quoteYaml(item.date)); lines.push('    text: ' + quoteYaml(item.text)); });
+  }
+  lines.push('---');
+  lines.push('');
+  el('output').value = lines.join('\n');
+  return meta.fileName;
+}
+function getDraft() {
+  var meta = {};
+  fields.forEach(function (id) { meta[id] = el(id).value; });
+  return { meta: meta, data: data };
+}
+function getDrafts() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; }
+  catch (err) { return {}; }
+}
+function setDrafts(drafts) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
+}
+function currentDraftName() {
+  return val('draftName') || val('title') || 'New Character';
+}
+function renderDraftSelect(selectedName) {
+  var select = el('draftSelect');
+  var drafts = getDrafts();
+  var names = Object.keys(drafts).sort(function (a, b) { return a.localeCompare(b); });
+  select.innerHTML = names.length ? names.map(function (name) {
+    return '<option value="' + escapeHtml(name) + '">' + escapeHtml(name) + '</option>';
+  }).join('') : '<option value="">No saved drafts</option>';
+  if (selectedName && drafts[selectedName]) select.value = selectedName;
+}
+function saveDraft() {
+  var name = currentDraftName();
+  var drafts = getDrafts();
+  drafts[name] = getDraft();
+  drafts[name].savedAt = new Date().toISOString();
+  setDrafts(drafts);
+  setVal('draftName', name);
+  renderDraftSelect(name);
+  el('draftStatus').textContent = 'Draft saved: ' + name;
+}
+function loadDraft() {
+  var name = el('draftSelect').value || val('draftName');
+  var drafts = getDrafts();
+  var draft = drafts[name];
+  if (!name || !draft) { el('draftStatus').textContent = 'No selected draft.'; return; }
+  fields.forEach(function (id) { if (draft.meta && draft.meta[id] != null) el(id).value = draft.meta[id]; });
+  setVal('draftName', name);
+  data = Object.assign({ facts: [], groups: [], details: [], stats: [], story: [], memo: [], aus: [] }, draft.data || {});
+  updateAll('Draft loaded: ' + name);
+}
+function clearDraft() {
+  var name = el('draftSelect').value || val('draftName');
+  var drafts = getDrafts();
+  if (!name || !drafts[name]) { el('draftStatus').textContent = 'No selected draft.'; return; }
+  if (!confirm('Delete draft: ' + name + '?')) return;
+  delete drafts[name];
+  setDrafts(drafts);
+  setVal('draftName', '');
+  renderDraftSelect();
+  el('draftStatus').textContent = 'Draft deleted.';
+}
+function updateAll(message) {
+  renderItems();
+  renderPreview();
+  buildMarkdown();
+  if (message) el('status').textContent = message;
+}
+document.querySelectorAll('.tab').forEach(function (tab) {
+  tab.addEventListener('click', function () {
+    document.querySelectorAll('.tab').forEach(function (item) { item.classList.toggle('active', item === tab); });
+    document.querySelectorAll('.builder-panel').forEach(function (panel) { panel.classList.toggle('active', panel.dataset.panel === tab.dataset.tab); });
+    renderPreview();
+    renderItems();
+  });
+});
+el('addFactBtn').addEventListener('click', addFact);
+el('addProfileBtn').addEventListener('click', addProfile);
+el('addKeywordBtn').addEventListener('click', addKeyword);
+el('addDetailSectionBtn').addEventListener('click', addDetailSection);
+el('addDetailBtn').addEventListener('click', addDetail);
+el('addStatBtn').addEventListener('click', addStat);
+el('addStoryBtn').addEventListener('click', addStory);
+el('addAuBtn').addEventListener('click', addAu);
+el('addMemoBtn').addEventListener('click', addMemo);
+el('saveDraftBtn').addEventListener('click', saveDraft);
+el('loadDraftBtn').addEventListener('click', loadDraft);
+el('clearDraftBtn').addEventListener('click', clearDraft);
+el('buildBtn').addEventListener('click', function () { var fileName = buildMarkdown(); el('status').textContent = 'Output refreshed for _characters/' + fileName + '.'; });
+el('copyBtn').addEventListener('click', function () { buildMarkdown(); el('output').focus(); el('output').select(); document.execCommand('copy'); el('status').textContent = 'Copied.'; });
+el('downloadBtn').addEventListener('click', function () {
+  var fileName = buildMarkdown();
+  var blob = new Blob([el('output').value], { type: 'text/markdown;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = fileName; a.click(); URL.revokeObjectURL(url);
+  el('status').textContent = 'Downloaded ' + fileName + '.';
+});
+el('draftSelect').addEventListener('change', function () { setVal('draftName', el('draftSelect').value); });
+el('itemList').addEventListener('click', function (event) {
+  var removeBtn = event.target.closest('[data-remove]');
+  var editBtn = event.target.closest('[data-edit]');
+  var moveBtn = event.target.closest('[data-move]');
+  if (removeBtn) { removeItem(removeBtn.dataset.remove, Number(removeBtn.dataset.a), removeBtn.dataset.b === '' ? null : Number(removeBtn.dataset.b)); return; }
+  if (editBtn) { startEdit(editBtn.dataset.edit, Number(editBtn.dataset.a), editBtn.dataset.b === '' ? null : Number(editBtn.dataset.b)); return; }
+  if (moveBtn) { moveItem(moveBtn.dataset.type, Number(moveBtn.dataset.a), moveBtn.dataset.b === '' ? null : Number(moveBtn.dataset.b), moveBtn.dataset.move === 'up' ? -1 : 1); }
+});
+var fieldHelp = {
+  title:'Characters 목록과 상세 페이지에 표시되는 캐릭터 이름입니다.',
+  fileName:'_characters 폴더에 저장할 Markdown 파일명입니다. 영문 소문자와 하이픈 사용을 권장합니다.',
+  order:'숫자가 작을수록 Characters 목록에서 먼저 표시됩니다.',
+  subtitle:'캐릭터 상세 페이지 제목 아래의 짧은 보조 문구입니다.',
+  role:'캐릭터 카드에서 이름 위에 표시되는 짧은 역할 또는 직업입니다.',
+  cardImage:'Characters 목록 카드에 쓰는 repo 안 이미지 경로입니다.',
+  profileImage:'상세 Profile의 왼쪽 카드에 쓰는 repo 안 이미지 경로입니다.',
+  accent:'섹션 배경과 주요 강조 요소에 쓰는 진한 색입니다.',
+  soft:'보조 강조와 기본 배경에 쓰는 연한 색입니다.',
+  ink:'본문과 키워드 등에 쓰는 기본 글자색입니다.',
+  tabColor:'선택된 Profile, Status 같은 상단 탭의 글자와 밑줄 색입니다.',
+  sectionText:'Accent 배경 위 Section title의 글자색입니다.',
+  keywordBg:'Keyword 항목의 작은 사각형 배경색입니다.',
+  draftName:'이 브라우저에 임시 저장할 때 구분하는 이름입니다. 사이트에는 올라가지 않습니다.',
+  draftSelect:'이 브라우저에 저장된 캐릭터 초안 목록입니다.',
+  factLabel:'카드의 작은 분류명입니다. 예: Gender, Age, Height.',
+  factValue:'분류명 옆에 표시할 값입니다.',
+  profileGroup:'같은 이름끼리 하나의 Profile 섹션으로 묶입니다.',
+  profileLabel:'상세 인적사항의 작은 분류명입니다.',
+  profileValue:'Small label 옆에 표시할 본문입니다.',
+  profileNote:'본문보다 흐리게 표시할 보충 설명입니다.',
+  profileNoteBreak:'Small note를 본문 옆 또는 다음 줄에 배치합니다.',
+  keywordGroup:'키워드 묶음 위에 표시할 섹션 이름입니다.',
+  keywordValue:'작은 사각형으로 표시할 키워드 하나입니다.',
+  detailSectionTitle:'큰 상세 박스 안에서 내용을 나누는 섹션 제목입니다.',
+  detailTitle:'접고 펼칠 수 있는 상세 항목의 제목입니다.',
+  detailOpen:'페이지를 처음 열었을 때 토글을 펼쳐둘지 정합니다.',
+  detailText:'토글 안에 들어갈 긴 설명입니다.',
+  detailImages:'토글에 넣을 repo 이미지 경로입니다. 한 줄에 하나씩 입력합니다.',
+  statLabel:'Status 그래프의 능력치 이름입니다.',
+  statValue:'Status 막대의 수치입니다. 0부터 100까지 사용합니다.',
+  storyDate:'정확한 날짜 대신 유년기, 성인기 같은 기간도 입력할 수 있습니다.',
+  storyTitle:'Story 타임라인 항목의 제목입니다.',
+  storyText:'Story 타임라인 항목의 내용입니다.',
+  memoDate:'메모의 날짜 또는 임의의 시기 표기입니다.',
+  memoTitle:'메모 제목입니다.',
+  memoText:'메모 본문입니다.'
+};
+Object.keys(fieldHelp).forEach(function (id) {
+  var control = el(id);
+  var label = control && control.closest('label');
+  if (label) { label.dataset.help = fieldHelp[id]; label.title = fieldHelp[id]; label.setAttribute('tabindex', '0'); }
+});
+var tabHelp = {
+  facts:'목록 카드와 Profile 왼쪽 카드에 표시할 요약 정보입니다.',
+  profile:'이름, 출신, 생일, 직업처럼 자유로운 인적사항을 만듭니다.',
+  keyword:'성격이나 특징을 짧은 키워드로 모읍니다.',
+  details:'긴 설정, 이미지, 접이식 토글을 큰 상세 박스에 넣습니다.',
+  status:'0-100 수치로 표현하는 상태나 능력치입니다.',
+  story:'날짜 또는 시기 순서로 사건을 기록하는 타임라인입니다.',
+  memo:'분류하기 어려운 메모와 조각 설정을 기록합니다.'
+};
+document.querySelectorAll('.tab[data-tab]').forEach(function (tab) {
+  if (tabHelp[tab.dataset.tab]) { tab.dataset.help = tabHelp[tab.dataset.tab]; tab.title = tabHelp[tab.dataset.tab]; tab.setAttribute('aria-label', tab.textContent + ': ' + tabHelp[tab.dataset.tab]); }
+});
+fields.forEach(function (id) { el(id).addEventListener('input', function () { updateAll(); }); });
+el('title').addEventListener('input', function () { if (!val('fileName')) el('fileName').placeholder = slugify(val('title') || 'character') + '.md'; if (!val('draftName')) el('draftName').placeholder = val('title') || 'Dietrich, Katia...'; });
+renderDraftSelect();
+updateAll();
+</script>
+</body>
+</html>

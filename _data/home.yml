@@ -1,0 +1,23 @@
+hero_image: "/noctea-characters/assets/gallery/Noctea/03.png"
+hero_position: "50% 9.99466346474551%"
+hero_crop_x: 50
+hero_crop_y: 9.99466346474551
+hero_crop_zoom: 1
+hero_gradient: true
+hero_gradient_color: "#575757"
+hero_gradient_opacity: 23
+hero_copy_scale: 95
+hero_text_position: "top-left"
+kicker_color: "#ffffff"
+title_color: "#ffffff"
+subtitle_color: "#ffffff"
+archive_color: "#ffffff"
+kicker: "PRIVATE ARCHIVE"
+title: "Noctea"
+subtitle: "Dietrich Schwartz × Katia Feltroof"
+archive_since: "ARCHIVE SINCE 2026"
+accent: "#174f35"
+soft: "#e7efe9"
+ink: "#253129"
+details_title: "DETAILS"
+details_text: "이곳에 홈페이지 소개와 메모를 적어주세요."

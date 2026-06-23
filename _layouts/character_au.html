@@ -1,0 +1,163 @@
+---
+layout: default
+---
+
+<article class="character-page character-au-page" style="--character-accent: {{ page.accent | default: '#4e4a65' }}; --character-soft: {{ page.soft | default: '#e7e3d8' }}; --character-ink: {{ page.ink | default: '#161732' }}; --character-tab-color: {{ page.tab_color | default: page.accent | default: '#4e4a65' }}; --character-section-text: {{ page.section_text | default: page.soft | default: '#e7e3d8' }};">
+  <div class="character-detail-tools">
+    <a class="character-tool-button" href="{{ site.baseurl }}/tools/character-au-manager.html?character={{ page.character_id }}" target="_blank" rel="noopener" aria-label="Open AU manager" title="Open AU manager">+</a>
+  </div>
+  <header class="character-header">
+    <a class="character-au-parent-link" href="{{ site.baseurl }}/characters/{{ page.character_id }}/">← {{ page.parent_title | default: 'Character' }}</a>
+    <p class="character-kicker">Alternate Universe</p>
+    <h1>{{ page.title }}</h1>
+    {% if page.subtitle %}<p class="character-subtitle">{{ page.subtitle }}</p>{% endif %}
+  </header>
+
+  <nav class="character-mini-tabs" aria-label="AU sections">
+    <button class="character-mini-tab active" type="button" data-character-tab="profile">Profile</button>
+    <button class="character-mini-tab" type="button" data-character-tab="story">Story</button>
+    <button class="character-mini-tab" type="button" data-character-tab="memo">Memo</button>
+    <span class="character-tab-indicator" aria-hidden="true"></span>
+  </nav>
+
+  <section class="character-panel active" data-character-panel="profile">
+    <div class="character-au-profile-grid">
+      <aside class="character-portrait-card">
+        {% if page.profile_image %}
+          <img class="character-portrait" src="{{ page.profile_image | relative_url }}" alt="">
+        {% elsif page.card_image %}
+          <img class="character-portrait" src="{{ page.card_image | relative_url }}" alt="">
+        {% endif %}
+        <dl class="character-quick-facts">
+          {% for fact in page.card_facts %}<div><dt>{{ fact.label }}</dt><dd>{{ fact.value }}</dd></div>{% endfor %}
+        </dl>
+      </aside>
+
+      <div class="character-status-card character-au-status-card">
+        <h2>Status</h2>
+        {% if page.stats %}
+          <div class="character-stat-list">
+            {% for stat in page.stats %}
+              <div class="character-stat-row">
+                <span>{{ stat.label }}</span>
+                <div class="character-stat-track"><i style="width: {{ stat.value }}%;"></i></div>
+                <strong>{{ stat.value }}</strong>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="character-au-empty">No status yet.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="character-detail-box character-au-detail-box">
+      {% if page.details %}
+        {% for detail in page.details %}
+          {% if detail.type == "section" %}
+            <div class="character-detail-section-title">{{ detail.title }}</div>
+          {% else %}
+            <details class="character-profile-detail"{% if detail.open %} open{% endif %}>
+              <summary>{{ detail.title }}</summary>
+              <div class="character-detail-content">
+                {% if detail.text %}<div class="character-detail-text">{{ detail.text | newline_to_br }}</div>{% endif %}
+                {% if detail.images %}
+                  <div class="character-detail-images character-detail-images-{{ detail.images | size }}">
+                    {% for image in detail.images %}<img src="{{ image | relative_url }}" alt="">{% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            </details>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <p class="character-au-empty">No details yet.</p>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="character-panel" data-character-panel="story">
+    <div class="character-timeline">
+      {% for item in page.story %}
+        <article class="character-timeline-item">
+          {% if item.date %}<time>{{ item.date }}</time>{% endif %}
+          <h2>{{ item.title }}</h2>
+          <p>{{ item.text }}</p>
+        </article>
+      {% endfor %}
+      {% unless page.story %}<p class="character-au-empty">No story yet.</p>{% endunless %}
+    </div>
+  </section>
+
+  <section class="character-panel" data-character-panel="memo">
+    <div class="character-memo-list">
+      {% for item in page.memo %}
+        <article class="character-memo-card">
+          {% if item.date %}<time>{{ item.date }}</time>{% endif %}
+          {% if item.title %}<h2>{{ item.title }}</h2>{% endif %}
+          <p>{{ item.text }}</p>
+        </article>
+      {% endfor %}
+      {% unless page.memo %}<p class="character-au-empty">No memo yet.</p>{% endunless %}
+    </div>
+  </section>
+</article>
+
+<div class="character-image-modal" hidden>
+  <button class="character-image-modal-close" type="button" aria-label="Close image">×</button>
+  <button class="character-image-modal-nav prev" type="button" aria-label="Previous image">‹</button>
+  <img src="" alt="">
+  <button class="character-image-modal-nav next" type="button" aria-label="Next image">›</button>
+</div>
+
+<script>
+(function () {
+  var root = document.querySelector('.character-au-page');
+  if (!root) return;
+  var tabs = Array.prototype.slice.call(root.querySelectorAll('.character-mini-tab'));
+  var panels = Array.prototype.slice.call(root.querySelectorAll('.character-panel'));
+  var tabBar = root.querySelector('.character-mini-tabs');
+  var indicator = root.querySelector('.character-tab-indicator');
+  function moveIndicator(tab) {
+    if (!tab) return;
+    var tabRect = tab.getBoundingClientRect();
+    var barRect = tabBar.getBoundingClientRect();
+    indicator.style.width = tabRect.width + 'px';
+    indicator.style.transform = 'translateX(' + (tabRect.left - barRect.left + tabBar.scrollLeft) + 'px)';
+  }
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      var id = tab.getAttribute('data-character-tab');
+      tabs.forEach(function (item) { item.classList.toggle('active', item === tab); });
+      panels.forEach(function (panel) { panel.classList.toggle('active', panel.getAttribute('data-character-panel') === id); });
+      moveIndicator(tab);
+    });
+  });
+  moveIndicator(tabs[0]);
+  window.addEventListener('resize', function () { moveIndicator(root.querySelector('.character-mini-tab.active')); });
+
+  var modal = document.querySelector('.character-image-modal');
+  var modalImage = modal.querySelector('img');
+  var images = Array.prototype.slice.call(root.querySelectorAll('.character-portrait, .character-detail-images img'));
+  var index = 0;
+  function show(next) {
+    if (!images.length) return;
+    index = (next + images.length) % images.length;
+    modalImage.src = images[index].src;
+  }
+  images.forEach(function (image, imageIndex) {
+    image.addEventListener('click', function () { index = imageIndex; show(index); modal.hidden = false; document.body.classList.add('twitter-modal-open'); });
+  });
+  function close() { modal.hidden = true; modalImage.removeAttribute('src'); document.body.classList.remove('twitter-modal-open'); }
+  modal.querySelector('.prev').addEventListener('click', function () { show(index - 1); });
+  modal.querySelector('.next').addEventListener('click', function () { show(index + 1); });
+  modal.querySelector('.character-image-modal-close').addEventListener('click', close);
+  modal.addEventListener('click', function (event) { if (event.target === modal) close(); });
+  window.addEventListener('keydown', function (event) {
+    if (modal.hidden) return;
+    if (event.key === 'Escape') close();
+    if (event.key === 'ArrowLeft') show(index - 1);
+    if (event.key === 'ArrowRight') show(index + 1);
+  });
+})();
+</script>

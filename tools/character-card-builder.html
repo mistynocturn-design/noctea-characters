@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Character Card Builder</title>
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; background: #f6f7f9; color: #222; }
+    main { max-width: 1120px; margin: 0 auto; padding: 28px 18px 48px; }
+    h1 { font-size: 24px; margin: 0 0 18px; }
+    label { display: block; font-size: 13px; font-weight: 700; margin: 12px 0 6px; }
+    input, textarea { box-sizing: border-box; width: 100%; border: 1px solid #ccd1d8; border-radius: 8px; padding: 10px 12px; font: inherit; background: #fff; }
+    textarea { min-height: 190px; resize: vertical; white-space: pre; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .panel { background: #fff; border: 1px solid #e3e6ea; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0; }
+    button { border: 0; border-radius: 8px; padding: 10px 14px; font-weight: 700; cursor: pointer; background: #4e4a65; color: #e7e3d8; }
+    button.secondary { background: #596273; color: #fff; }
+    .hint, .status { color: #646b76; font-size: 13px; line-height: 1.55; }
+    @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+  <style>input[type="color"]{cursor:pointer;height:38px;padding:3px}</style>
+</head>
+<body>
+<main>
+  <h1>Character Card Builder</h1>
+
+  <section class="panel">
+    <div class="grid">
+      <div><label for="title">Character name</label><input id="title" placeholder="Dietrich Schwartz"></div>
+      <div><label for="fileName">File name</label><input id="fileName" placeholder="dietrich-schwartz.md"></div>
+      <div><label for="order">Card order</label><input id="order" type="number" value="1"></div>
+      <div><label for="role">Small role text</label><input id="role" placeholder="Investigator"></div>
+      <div><label for="cardImage">Card image</label><input id="cardImage" placeholder="/noctea-characters/assets/characters/name/card.jpg"></div>
+      <div><label for="profileImage">Profile image</label><input id="profileImage" placeholder="/noctea-characters/assets/characters/name/profile.jpg"></div>
+<div><label for="accent">Accent</label><input id="accent" type="color" value="#4e4a65"></div>
+<div><label for="soft">Soft</label><input id="soft" type="color" value="#e7e3d8"></div>
+<div><label for="ink">Ink</label><input id="ink" type="color" value="#161732"></div>
+    </div>
+    <label for="facts">Card facts</label>
+    <textarea id="facts" placeholder="Gender|Male&#10;Age|25&#10;Height|198cm"></textarea>
+    <p class="hint">One fact per line: label|value. The first three facts appear on the Characters card. All facts also appear under the profile image on the detail page.</p>
+    <div class="actions">
+      <button id="buildBtn" type="button">Build character file</button>
+      <button class="secondary" id="copyBtn" type="button">Copy output</button>
+    </div>
+    <div class="status" id="status"></div>
+  </section>
+
+  <section class="panel">
+    <label for="output">Output for _characters/file-name.md</label>
+    <textarea id="output" spellcheck="false"></textarea>
+  </section>
+</main>
+<script>
+function field(id) { return document.getElementById(id); }
+function quoteYaml(value) { return '"' + String(value || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'; }
+function slugify(value) {
+  return String(value || 'character').trim().toLowerCase().replace(/[^a-z0-9가-힣]+/g, '-').replace(/^-+|-+$/g, '') || 'character';
+}
+function buildFacts() {
+  return field('facts').value.split(/\r?\n/).map(function (line) {
+    var parts = line.split('|');
+    return { label: (parts[0] || '').trim(), value: parts.slice(1).join('|').trim() };
+  }).filter(function (item) { return item.label || item.value; });
+}
+function buildOutput() {
+  var title = field('title').value.trim() || 'New Character';
+  var fileName = field('fileName').value.trim() || slugify(title) + '.md';
+  if (!/\.md$/i.test(fileName)) fileName += '.md';
+  var facts = buildFacts();
+  var lines = ['---'];
+  lines.push('layout: character');
+  lines.push('title: ' + quoteYaml(title));
+  lines.push('subtitle: ' + quoteYaml(''));
+  lines.push('order: ' + (parseInt(field('order').value, 10) || 1));
+  lines.push('role: ' + quoteYaml(field('role').value.trim()));
+  lines.push('accent: ' + quoteYaml(field('accent').value.trim() || '#4e4a65'));
+  lines.push('soft: ' + quoteYaml(field('soft').value.trim() || '#e7e3d8'));
+  lines.push('ink: ' + quoteYaml(field('ink').value.trim() || '#161732'));
+  lines.push('card_image: ' + quoteYaml(field('cardImage').value.trim()));
+  lines.push('profile_image: ' + quoteYaml(field('profileImage').value.trim()));
+  lines.push('card_facts:');
+  if (facts.length) {
+    facts.forEach(function (fact) {
+      lines.push('  - label: ' + quoteYaml(fact.label));
+      lines.push('    value: ' + quoteYaml(fact.value));
+    });
+  } else {
+    lines.push('  - label: "Gender"');
+    lines.push('    value: ""');
+    lines.push('  - label: "Age"');
+    lines.push('    value: ""');
+    lines.push('  - label: "Height"');
+    lines.push('    value: ""');
+  }
+  lines.push('profile_groups:');
+  lines.push('  - title: "NAME"');
+  lines.push('    items:');
+  lines.push('      - label: "Name"');
+  lines.push('        value: ' + quoteYaml(title));
+  lines.push('---');
+  lines.push('');
+  lines.push('## Profile Notes');
+  lines.push('');
+  field('output').value = lines.join('\n');
+  field('status').textContent = 'Built. Save this as _characters/' + fileName + '.';
+}
+field('title').addEventListener('input', function () {
+  if (!field('fileName').value.trim()) field('fileName').placeholder = slugify(field('title').value || 'character') + '.md';
+});
+field('buildBtn').addEventListener('click', buildOutput);
+field('copyBtn').addEventListener('click', function () { field('output').focus(); field('output').select(); document.execCommand('copy'); field('status').textContent = 'Copied.'; });
+buildOutput();
+</script>
+</body>
+</html>

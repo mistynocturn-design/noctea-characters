@@ -1,0 +1,28 @@
+---
+layout: page
+title: Characters
+---
+
+<div class="character-index">
+  {% assign characters = site.characters | sort: "order" %}
+  {% for character in characters %}
+    <article class="character-card" style="--character-accent: {{ character.accent | default: '#4e4a65' }}; --character-soft: {{ character.soft | default: '#e7e3d8' }};">
+      <a class="character-card-link" href="{{ character.url | relative_url }}">
+        {% if character.card_image %}
+          <img class="character-card-image" src="{{ character.card_image | relative_url }}" alt="">
+        {% else %}
+          <div class="character-card-image character-card-placeholder">{{ character.title | slice: 0 }}</div>
+        {% endif %}
+        <div class="character-card-body">
+          {% if character.role %}<p class="character-card-role">{{ character.role }}</p>{% endif %}
+          <h2>{{ character.title }}</h2>
+          <dl class="character-card-facts">
+            {% for fact in character.card_facts limit: 3 %}
+              <div><dt>{{ fact.label }}</dt><dd>{{ fact.value }}</dd></div>
+            {% endfor %}
+          </dl>
+        </div>
+      </a>
+    </article>
+  {% endfor %}
+</div>

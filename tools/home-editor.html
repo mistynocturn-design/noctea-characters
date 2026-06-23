@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Noctea Home Editor</title>
+  <style>
+    :root{--ink:#253129;--muted:#738078;--line:#d7ded9;--paper:#eef2ef;--accent:#174f35;--soft:#e7efe9;--gradient:#575757;--kicker:#fff;--title:#fff;--subtitle:#fff;--archive:#fff}*{box-sizing:border-box}body{background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;margin:0}main{margin:0 auto;max-width:1280px;padding:24px 18px 60px}h1{font-size:1.4rem}.guide,.panel,.preview{background:#fff;border:1px solid var(--line);border-radius:8px}.guide{margin-bottom:14px;padding:0 13px}.guide summary{cursor:pointer;font-size:.72rem;font-weight:750;padding:11px 0}.guide ol{color:var(--muted);font-size:.68rem;line-height:1.8}.layout{display:grid;gap:16px;grid-template-columns:minmax(410px,.9fr) minmax(480px,1.1fr)}.panel,.preview{padding:16px}.grid{display:grid;gap:10px;grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}label{color:#626e66;display:block;font-size:.67rem;font-weight:750}input,textarea,select{border:1px solid #cfd8d2;border-radius:5px;font:inherit;font-size:.75rem;margin-top:5px;padding:8px 9px;width:100%}textarea{min-height:88px;resize:vertical}.check{align-items:center;display:flex;gap:.45rem;margin-top:1.3rem}.check input{margin:0;width:auto}.colors{display:grid;gap:8px;grid-template-columns:repeat(4,1fr)}input[type=color]{height:38px;padding:3px}.actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}button{background:var(--accent);border:1px solid var(--accent);border-radius:5px;color:#fff;cursor:pointer;font-size:.68rem;font-weight:750;padding:8px 11px}button.secondary{background:#fff;border-color:#bfcac2;color:#536158}.status,.small{color:var(--muted);font-size:.64rem}.output{font-family:Consolas,monospace;min-height:240px;margin-top:12px}.preview-wrap{position:sticky;top:12px}.preview h2{font-size:.66rem;letter-spacing:.08em;margin:0 0 8px}.hero{aspect-ratio:3/1;background:#222;overflow:hidden;position:relative}.hero>img{height:100%;margin:0;object-fit:cover;position:absolute;width:100%;z-index:0}.shade{background:linear-gradient(90deg,color-mix(in srgb,var(--gradient) 23%,transparent),transparent 78%);inset:0;position:absolute;z-index:2}.shade.off{display:none}.copy{bottom:0;left:0;max-width:70%;padding:clamp(10px,3vw,28px);position:absolute;transform:scale(var(--copy-scale,1));transform-origin:left bottom;z-index:4}.copy small{color:var(--kicker);font-size:.46rem;font-weight:800}.copy h3{color:var(--title);font-size:clamp(1.3rem,5vw,3.2rem);line-height:1;margin:.15rem 0}.copy p{font-size:.55rem;margin:.1rem 0}.subtitle{color:var(--subtitle)}.archive{color:var(--archive)}.hero.text-top-left .copy{bottom:auto;top:0;transform-origin:left top}.hero.text-top-right .copy{bottom:auto;left:auto;right:0;text-align:right;top:0;transform-origin:right top}.hero.text-bottom-right .copy{left:auto;right:0;text-align:right;transform-origin:right bottom}.details{background:#fbfbfb;border:1px solid #e1e7e3;border-radius:6px;margin-top:14px}.details-title{background:var(--accent);color:#fff;font-size:.62rem;font-weight:800;letter-spacing:.08em;padding:.55rem .75rem}.details-text{font-size:.72rem;line-height:1.8;min-height:7rem;padding:1rem;white-space:pre-wrap}@media(max-width:920px){.layout{grid-template-columns:1fr}.preview-wrap{position:static}}@media(max-width:560px){.grid,.colors{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}}
+  </style>
+</head>
+<body>
+<main>
+  <h1>Noctea Home Editor</h1>
+  <details class="guide"><summary>이용방법</summary><ol><li>헤더는 트위터 헤더와 같은 3:1 비율로 미리보기 됩니다.</li><li>이미지 위치와 확대, 글자·그라데이션을 조절합니다.</li><li>DETAILS 제목과 내용을 수정하면 헤더 바로 아래의 넓은 섹션에 반영됩니다.</li><li>완성된 <code>home.yml</code>을 내려받아 <code>_data/home.yml</code>과 교체합니다.</li></ol></details>
+  <div class="layout">
+    <section class="panel">
+      <div class="grid">
+        <label class="wide">Hero image path<input id="heroImage"></label>
+        <label>Horizontal position<input id="cropX" type="range" min="0" max="100" step=".5"></label>
+        <label>Vertical position<input id="cropY" type="range" min="0" max="100" step=".5"></label>
+        <label>Crop zoom<input id="cropZoom" type="range" min="1" max="4" step=".05"></label>
+        <label>Text position<select id="textPosition"><option value="top-left">좌측 상단</option><option value="top-right">우측 상단</option><option value="bottom-left">좌측 하단</option><option value="bottom-right">우측 하단</option></select></label>
+        <label class="check">Use gradient<input id="heroGradient" type="checkbox"></label>
+        <label>Gradient opacity<input id="gradientOpacity" type="range" min="0" max="100" step="1"></label>
+        <label>Gradient color<input id="heroGradientColor" type="color"></label>
+        <label>Copy scale<input id="copyScale" type="range" min="70" max="120" step="1"></label>
+        <label>Kicker<input id="kicker"></label>
+        <label class="wide">Title<input id="title"></label>
+        <label class="wide">Subtitle<input id="subtitle"></label>
+        <label class="wide">Archive label<input id="archiveSince"></label>
+        <div class="wide colors"><label>Kicker<input id="kickerColor" type="color"></label><label>Title<input id="titleColor" type="color"></label><label>Subtitle<input id="subtitleColor" type="color"></label><label>Archive<input id="archiveColor" type="color"></label></div>
+        <label class="wide">DETAILS title<input id="detailsTitle"></label>
+        <label class="wide">DETAILS text<textarea id="detailsText"></textarea></label>
+        <div class="wide colors"><label>Accent<input id="accent" type="color"></label><label>Soft<input id="soft" type="color"></label><label>Ink<input id="ink" type="color"></label></div>
+      </div>
+      <div class="actions"><button id="download">Download home.yml</button><button id="copy" class="secondary">Copy YAML</button><button id="reset" class="secondary">Reset all</button></div>
+      <div class="status" id="status"></div>
+      <textarea class="output" id="output" readonly></textarea>
+    </section>
+    <aside class="preview-wrap"><section class="preview"><h2>FINAL PREVIEW — 3:1 HEADER</h2><div class="hero" id="hero"><img id="previewImage" alt=""><span class="shade" id="shade"></span><div class="copy" id="heroCopy"><small id="previewKicker"></small><h3 id="previewTitle"></h3><p class="subtitle" id="previewSubtitle"></p><p class="archive" id="previewSince"></p></div></div><div class="details"><div class="details-title" id="previewDetailsTitle"></div><div class="details-text" id="previewDetailsText"></div></div></section></aside>
+  </div>
+</main>
+<script>
+(function(){
+  'use strict';
+  var KEY='noctea-home-editor-v1';
+  var D={heroImage:'/noctea-characters/assets/gallery/Noctea/03.png',cropX:50,cropY:10,cropZoom:1,heroGradient:true,heroGradientColor:'#575757',gradientOpacity:23,textPosition:'top-left',copyScale:95,kickerColor:'#ffffff',titleColor:'#ffffff',subtitleColor:'#ffffff',archiveColor:'#ffffff',kicker:'PRIVATE ARCHIVE',title:'Noctea',subtitle:'Dietrich Schwartz × Katia Feltroof',archiveSince:'ARCHIVE SINCE 2026',accent:'#174f35',soft:'#e7efe9',ink:'#253129',detailsTitle:'DETAILS',detailsText:'이곳에 홈페이지 소개와 메모를 적어주세요.'};
+  var ids=Object.keys(D),$=function(id){return document.getElementById(id)};
+  function get(id){return id==='heroGradient'?$(id).checked:$(id).value}
+  function set(id,v){if(id==='heroGradient')$(id).checked=v===true||v==='true';else $(id).value=v}
+  function imagePath(value){var p=String(value||'').trim().replace(/[\\₩]+/g,'/'),i=p.toLowerCase().indexOf('/assets/');if(i>=0)p=p.slice(i);else if(p.toLowerCase().startsWith('assets/'))p='/'+p;else throw Error('assets 폴더 안의 이미지 경로를 입력해주세요.');if(!/\.(jpe?g|png|gif|webp)$/i.test(p))throw Error('이미지 파일 형식을 확인해주세요.');return'/noctea-characters'+p}
+  function yaml(v){return JSON.stringify(String(v))}
+  function build(){var path='';try{path=imagePath(get('heroImage'));$('status').textContent=''}catch(e){$('status').textContent=e.message}var lines=['hero_image: '+yaml(path),'hero_position: '+yaml(get('cropX')+'% '+get('cropY')+'%'),'hero_crop_x: '+Number(get('cropX')),'hero_crop_y: '+Number(get('cropY')),'hero_crop_zoom: '+Number(get('cropZoom')),'hero_gradient: '+(get('heroGradient')?'true':'false'),'hero_gradient_color: '+yaml(get('heroGradientColor')),'hero_gradient_opacity: '+Number(get('gradientOpacity')),'hero_copy_scale: '+Number(get('copyScale')),'hero_text_position: '+yaml(get('textPosition')),'kicker_color: '+yaml(get('kickerColor')),'title_color: '+yaml(get('titleColor')),'subtitle_color: '+yaml(get('subtitleColor')),'archive_color: '+yaml(get('archiveColor')),'kicker: '+yaml(get('kicker')),'title: '+yaml(get('title')),'subtitle: '+yaml(get('subtitle')),'archive_since: '+yaml(get('archiveSince')),'accent: '+yaml(get('accent')),'soft: '+yaml(get('soft')),'ink: '+yaml(get('ink')),'details_title: '+yaml(get('detailsTitle')),'details_text: '+yaml(get('detailsText')),''];$('output').value=lines.join('\n');return $('output').value}
+  function render(){var path='';try{path=imagePath(get('heroImage'))}catch(e){}$('previewImage').src=path;$('previewImage').style.objectPosition=get('cropX')+'% '+get('cropY')+'%';$('previewImage').style.transform='scale('+Math.max(1,Number(get('cropZoom'))||1)+')';$('shade').classList.toggle('off',!get('heroGradient'));$('shade').style.background='linear-gradient('+(get('textPosition').indexOf('right')>=0?'270deg':'90deg')+',color-mix(in srgb,'+get('heroGradientColor')+' '+get('gradientOpacity')+'%,transparent),transparent 78%)';$('hero').className='hero text-'+get('textPosition');$('heroCopy').style.setProperty('--copy-scale',Number(get('copyScale'))/100);[['--kicker',get('kickerColor')],['--title',get('titleColor')],['--subtitle',get('subtitleColor')],['--archive',get('archiveColor')],['--accent',get('accent')]].forEach(function(x){document.documentElement.style.setProperty(x[0],x[1])});$('previewKicker').textContent=get('kicker');$('previewTitle').textContent=get('title');$('previewSubtitle').textContent=get('subtitle');$('previewSince').textContent=get('archiveSince');$('previewDetailsTitle').textContent=get('detailsTitle');$('previewDetailsText').textContent=get('detailsText');build();var model={};ids.forEach(function(id){model[id]=get(id)});localStorage.setItem(KEY,JSON.stringify(model))}
+  var saved;try{saved=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}ids.forEach(function(id){set(id,saved&&saved[id]!=null?saved[id]:D[id]);$(id).addEventListener('input',render)});
+  $('copy').onclick=async function(){try{await navigator.clipboard.writeText(build());$('status').textContent='YAML copied.'}catch(e){$('status').textContent='복사 권한을 확인해주세요.'}};
+  $('download').onclick=function(){var url=URL.createObjectURL(new Blob([build()],{type:'text/yaml'})),a=document.createElement('a');a.href=url;a.download='home.yml';a.click();setTimeout(function(){URL.revokeObjectURL(url)},1000)};
+  $('reset').onclick=function(){if(confirm('모든 설정을 초기화할까요?')){ids.forEach(function(id){set(id,D[id])});render()}};
+  render();
+})();
+</script>
+</body>
+</html>

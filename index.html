@@ -1,0 +1,20 @@
+---
+layout: home
+title: Home
+---
+{% assign home = site.data.home %}
+<section class="home-page" data-home-page style="--home-accent:{{ home.accent | default: '#174f35' }};--home-soft:{{ home.soft | default: '#e7efe9' }};--home-ink:{{ home.ink | default: '#253129' }};--home-gradient:{{ home.hero_gradient_color | default: '#101812' }};--home-gradient-opacity:{{ home.hero_gradient_opacity | default: 70 }}%;--home-kicker:{{ home.kicker_color | default: '#ffffff' }};--home-title:{{ home.title_color | default: '#ffffff' }};--home-subtitle:{{ home.subtitle_color | default: '#ffffff' }};--home-archive:{{ home.archive_color | default: '#ffffff' }};">
+  <a class="home-editor-button" href="{{ site.baseurl }}/tools/home-editor.html" target="_blank" rel="noopener" aria-label="Open Home editor" title="Open Home editor">+</a>
+  {% assign home_copy_scale = home.hero_copy_scale | default: 100 | times: 0.01 %}
+  <header class="home-hero text-{{ home.hero_text_position | default: 'top-left' }}" style="--home-copy-scale:{{ home_copy_scale }}">
+    {% if home.hero_image %}<img src="{{ home.hero_image }}" data-home-hero-image data-crop-x="{{ home.hero_crop_x | default: 50 }}" data-crop-y="{{ home.hero_crop_y | default: 50 }}" data-crop-zoom="{{ home.hero_crop_zoom | default: 1 }}" alt="">{% endif %}
+    <span class="home-hero-shade{% unless home.hero_gradient %} is-off{% endunless %}"></span>
+    <div class="home-hero-copy"><p>{{ home.kicker | default: "PRIVATE ARCHIVE" }}</p><h1>{{ home.title | default: "Noctea" }}</h1><strong>{{ home.subtitle }}</strong><small>{{ home.archive_since }}</small></div>
+  </header>
+
+  <section class="home-details character-detail-box">
+    <div class="character-detail-section-title">{{ home.details_title | default: "DETAILS" }}</div>
+    <div class="home-details-content">{{ home.details_text | default: "이곳에 홈페이지 소개와 메모를 적어주세요." | newline_to_br }}</div>
+  </section>
+</section>
+<script>(function(){var image=document.querySelector('[data-home-hero-image]');if(!image)return;function crop(){var box=image.parentElement,nw=image.naturalWidth,nh=image.naturalHeight,bw=box.clientWidth,bh=box.clientHeight;if(!nw||!nh||!bw||!bh)return;var ratio=bw/bh,maxW,maxH;if(nw/nh>ratio){maxH=nh;maxW=nh*ratio}else{maxW=nw;maxH=nw/ratio}var zoom=Math.max(1,Number(image.dataset.cropZoom)||1),w=maxW/zoom,h=maxH/zoom,x=(nw-w)*(Number(image.dataset.cropX)||0)/100,y=(nh-h)*(Number(image.dataset.cropY)||0)/100,scale=bw/w;image.style.width=nw*scale+'px';image.style.height=nh*scale+'px';image.style.left=-x*scale+'px';image.style.top=-y*scale+'px'}image.addEventListener('load',crop);window.addEventListener('resize',crop);if(image.complete)crop()})();</script>

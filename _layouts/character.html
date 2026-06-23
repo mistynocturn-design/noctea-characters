@@ -1,0 +1,277 @@
+---
+layout: default
+---
+
+{% assign standalone_aus = site.character_aus | where: "character_id", page.slug | sort: "order" %}
+<article class="character-page" style="--character-accent: {{ page.accent | default: '#4e4a65' }}; --character-soft: {{ page.soft | default: '#e7e3d8' }}; --character-ink: {{ page.ink | default: '#161732' }}; --character-tab-color: {{ page.tab_color | default: page.accent | default: '#4e4a65' }}; --character-section-text: {{ page.section_text | default: page.soft | default: '#e7e3d8' }}; --character-keyword-bg: {{ page.keyword_bg | default: page.soft | default: '#e7e3d8' }};">
+  <a class="detail-back-link" href="{{ site.baseurl }}/characters/">← Characters</a>
+  <div class="character-detail-tools">
+    <a class="character-tool-button" href="{{ site.baseurl }}/tools/character-manager.html" target="_blank" rel="noopener" aria-label="Open character manager" title="Open character manager">+</a>
+  </div>
+  <header class="character-header">
+    <p class="character-kicker">Character Wiki</p>
+    <h1>{{ page.title }}</h1>
+    {% if page.subtitle %}<p class="character-subtitle">{{ page.subtitle }}</p>{% endif %}
+  </header>
+
+  <nav class="character-mini-tabs" aria-label="Character sections">
+    <button class="character-mini-tab active" type="button" data-character-tab="profile">Profile</button>
+    {% if page.stats %}<button class="character-mini-tab" type="button" data-character-tab="status">Status</button>{% endif %}
+    {% if page.story %}<button class="character-mini-tab" type="button" data-character-tab="story">Story</button>{% endif %}
+    <button class="character-mini-tab" type="button" data-character-tab="au">AU</button>
+    <button class="character-mini-tab" type="button" data-character-tab="memo">Memo</button>
+    <span class="character-tab-indicator" aria-hidden="true"></span>
+  </nav>
+
+  <section class="character-panel active" data-character-panel="profile">
+    <div class="character-profile-grid">
+      <aside class="character-portrait-card">
+        {% if page.profile_image %}
+          <img class="character-portrait" src="{{ page.profile_image | relative_url }}" alt="">
+        {% elsif page.card_image %}
+          <img class="character-portrait" src="{{ page.card_image | relative_url }}" alt="">
+        {% else %}
+          <div class="character-portrait character-portrait-placeholder">{{ page.title | slice: 0 }}</div>
+        {% endif %}
+        <dl class="character-quick-facts">
+          {% for fact in page.card_facts %}
+            <div><dt>{{ fact.label }}</dt><dd>{{ fact.value }}</dd></div>
+          {% endfor %}
+        </dl>
+      </aside>
+
+      <div class="character-wiki-box">
+        {% if page.profile_groups %}
+          {% for group in page.profile_groups %}
+            <div class="character-section-title">{{ group.title }}</div>
+            {% if group.style == "keywords" %}
+              <div class="character-keywords">
+                {% for item in group.items %}<span>{{ item.value | default: item }}</span>{% endfor %}
+              </div>
+            {% else %}
+              <dl class="character-info-list">
+                {% for item in group.items %}
+                  <div>
+                    <dt>{{ item.label }}</dt>
+                    <dd>{{ item.value }}{% if item.note %}<span class="character-info-note{% if item.note_break %} block{% endif %}">{{ item.note }}</span>{% endif %}</dd>
+                  </div>
+                {% endfor %}
+              </dl>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          {% if page.profile %}
+            <div class="character-section-title">Name</div>
+            <dl class="character-info-list">
+              {% for item in page.profile %}
+                <div><dt>{{ item.label }}</dt><dd>{{ item.value }}</dd></div>
+              {% endfor %}
+            </dl>
+          {% endif %}
+          {% if page.keywords %}
+            <div class="character-section-title">Keyword</div>
+            <div class="character-keywords">
+              {% for keyword in page.keywords %}<span>{{ keyword }}</span>{% endfor %}
+            </div>
+          {% endif %}
+        {% endif %}
+        {% if content != blank %}
+          <div class="character-markdown">{{ content }}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if page.profile_details %}
+      <div class="character-detail-box">
+        {% for detail in page.profile_details %}
+          {% if detail.type == "section" %}
+            <div class="character-detail-section-title">{{ detail.title }}</div>
+          {% else %}
+            <details class="character-profile-detail"{% if detail.open %} open{% endif %}>
+              <summary>{{ detail.title }}</summary>
+              <div class="character-detail-content">
+                {% if detail.text %}
+                  <div class="character-detail-text">{{ detail.text | newline_to_br }}</div>
+                {% endif %}
+                {% if detail.images %}
+                  <div class="character-detail-images character-detail-images-{{ detail.images | size }}">
+                    {% for image in detail.images %}
+                      <img src="{{ image | relative_url }}" alt="">
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            </details>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </section>
+
+  {% if page.stats %}
+  <section class="character-panel" data-character-panel="status">
+    <div class="character-status-layout">
+      <aside class="character-status-card">
+        {% if page.card_image %}<img class="character-status-image" src="{{ page.card_image | relative_url }}" alt="">{% endif %}
+        <h2>{{ page.title }}</h2>
+        {% if page.role %}<p>{{ page.role }}</p>{% endif %}
+      </aside>
+      <div class="character-stat-box">
+        <h2>Status</h2>
+        <div class="character-stat-list">
+          {% for stat in page.stats %}
+            <div class="character-stat-row">
+              <span>{{ stat.label }}</span>
+              <div class="character-stat-track"><i style="width: {{ stat.value }}%;"></i></div>
+              <strong>{{ stat.value }}</strong>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if page.story %}
+  <section class="character-panel" data-character-panel="story">
+    <div class="character-timeline">
+      {% for item in page.story %}
+        <article class="character-timeline-item">
+          {% if item.date %}<time>{{ item.date }}</time>{% endif %}
+          <h2>{{ item.title }}</h2>
+          <p>{{ item.text }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="character-panel" data-character-panel="au">
+    <div class="character-au-list active" data-au-list>
+      <div class="character-au-tools">
+        <a class="character-tool-button" href="{{ site.baseurl }}/tools/character-au-manager.html?character={{ page.slug }}" target="_blank" rel="noopener" aria-label="Open AU manager" title="Open AU manager">+</a>
+      </div>
+      <div class="character-au-grid">
+        {% for au in standalone_aus %}
+          <a class="character-au-card character-au-card-link" href="{{ au.url | relative_url }}" style="--character-accent: {{ au.accent | default: page.accent | default: '#4e4a65' }}; --character-soft: {{ au.soft | default: page.soft | default: '#e7e3d8' }}; --character-ink: {{ au.ink | default: page.ink | default: '#161732' }};">
+            {% if au.card_image %}
+              <img class="character-card-image" src="{{ au.card_image | relative_url }}" alt="">
+            {% elsif au.profile_image %}
+              <img class="character-card-image" src="{{ au.profile_image | relative_url }}" alt="">
+            {% else %}
+              <div class="character-card-image character-card-placeholder">{{ au.title | slice: 0 }}</div>
+            {% endif %}
+            <span class="character-card-body">
+              {% if au.subtitle %}<span class="character-card-role">{{ au.subtitle }}</span>{% endif %}
+              <strong>{{ au.title }}</strong>
+              {% if au.summary %}<small>{{ au.summary }}</small>{% endif %}
+            </span>
+          </a>
+        {% endfor %}
+        {% if standalone_aus.size == 0 %}<p class="character-au-empty">No AU profiles yet.</p>{% endif %}
+      </div>
+    </div>
+  </section>
+  <section class="character-panel" data-character-panel="memo">
+    <div class="character-memo-list">
+      {% for item in page.memo %}
+        <article class="character-memo-card">
+          {% if item.date %}<time>{{ item.date }}</time>{% endif %}
+          <p>{{ item.text }}</p>
+        </article>
+      {% endfor %}
+      {% unless page.memo %}<p class="character-au-empty">No memo yet.</p>{% endunless %}
+    </div>
+  </section>
+</article>
+
+<script>
+(function () {
+  var root = document.currentScript.previousElementSibling;
+  if (!root || !root.classList.contains('character-page')) return;
+  var tabs = Array.prototype.slice.call(root.querySelectorAll('.character-mini-tab'));
+  var panels = Array.prototype.slice.call(root.querySelectorAll('.character-panel'));
+  var tabBar = root.querySelector('.character-mini-tabs');
+  var tabIndicator = root.querySelector('.character-tab-indicator');
+
+  function moveTabIndicator(tab) {
+    if (!tabBar || !tabIndicator || !tab) return;
+    var tabRect = tab.getBoundingClientRect();
+    var barRect = tabBar.getBoundingClientRect();
+    tabIndicator.style.width = tabRect.width + 'px';
+    tabIndicator.style.transform = 'translateX(' + (tabRect.left - barRect.left + tabBar.scrollLeft) + 'px)';
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      var id = tab.getAttribute('data-character-tab');
+      tabs.forEach(function (item) { item.classList.toggle('active', item === tab); });
+      panels.forEach(function (panel) { panel.classList.toggle('active', panel.getAttribute('data-character-panel') === id); });
+      moveTabIndicator(tab);
+    });
+  });
+  moveTabIndicator(root.querySelector('.character-mini-tab.active'));
+  window.addEventListener('resize', function () {
+    window.requestAnimationFrame(function () {
+      moveTabIndicator(root.querySelector('.character-mini-tab.active'));
+    });
+  });
+  var zoomableImages = Array.prototype.slice.call(root.querySelectorAll('.character-portrait, .character-status-image, .character-detail-images img'));
+  if (zoomableImages.length) {
+    var modal = document.createElement('div');
+    modal.className = 'character-image-modal';
+    modal.hidden = true;
+    modal.innerHTML = '<button class="character-image-modal-close" type="button" aria-label="Close image">x</button><button class="character-image-modal-nav character-image-modal-prev" type="button" aria-label="Previous image">‹</button><img alt=""><button class="character-image-modal-nav character-image-modal-next" type="button" aria-label="Next image">›</button>';
+    document.body.appendChild(modal);
+
+    var modalImage = modal.querySelector('img');
+    var closeButton = modal.querySelector('.character-image-modal-close');
+    var prevButton = modal.querySelector('.character-image-modal-prev');
+    var nextButton = modal.querySelector('.character-image-modal-next');
+    var currentImageIndex = 0;
+
+    function showImage(index) {
+      currentImageIndex = (index + zoomableImages.length) % zoomableImages.length;
+      var image = zoomableImages[currentImageIndex];
+      modalImage.src = image.currentSrc || image.src;
+      modalImage.alt = image.alt || '';
+    }
+
+    function closeModal() {
+      modal.hidden = true;
+      document.body.classList.remove('twitter-modal-open');
+      modalImage.removeAttribute('src');
+    }
+
+    function openModal(index) {
+      showImage(index);
+      modal.hidden = false;
+      document.body.classList.add('twitter-modal-open');
+    }
+
+    zoomableImages.forEach(function (image, index) {
+      image.addEventListener('click', function () {
+        openModal(index);
+      });
+    });
+
+    closeButton.addEventListener('click', closeModal);
+    prevButton.addEventListener('click', function (event) {
+      event.stopPropagation();
+      showImage(currentImageIndex - 1);
+    });
+    nextButton.addEventListener('click', function (event) {
+      event.stopPropagation();
+      showImage(currentImageIndex + 1);
+    });
+    modal.addEventListener('click', function (event) {
+      if (event.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', function (event) {
+      if (modal.hidden) return;
+      if (event.key === 'Escape') closeModal();
+      if (event.key === 'ArrowLeft') showImage(currentImageIndex - 1);
+      if (event.key === 'ArrowRight') showImage(currentImageIndex + 1);
+    });
+  }})();
+</script>
