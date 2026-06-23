@@ -3596,6 +3596,7 @@ a.sidebar-nav-item:active,
 }
 @media(min-width:48em){
   .sidebar,.content,.sidebar-sticky{transition:none!important}
+  .sidebar-sticky{bottom:auto;top:1.5rem}
   body:has(.home-page) .sidebar{padding-left:1.15rem;padding-right:1.15rem;width:14rem}
   body:has(.home-page) .sidebar-sticky{left:1.15rem;right:1.15rem}
 }
