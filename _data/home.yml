@@ -21,3 +21,9 @@ soft: "#ddd8c0"
 ink: "#253129"
 details_title: "DETAILS"
 details_text: "이곳에 홈페이지 소개와 메모를 적어주세요."
+details:
+  - title: "DETAILS"
+    type: "section"
+  - title: "Memo"
+    open: true
+    text: "이곳에 홈페이지 소개와 메모를 적어주세요."

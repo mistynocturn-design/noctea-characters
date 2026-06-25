@@ -13,8 +13,32 @@ title: Home
   </header>
 
   <section class="home-details character-detail-box">
-    <div class="character-detail-section-title">{{ home.details_title | default: "DETAILS" }}</div>
-    <div class="home-details-content">{{ home.details_text | default: "이곳에 홈페이지 소개와 메모를 적어주세요." | newline_to_br }}</div>
+    {% if home.details %}
+      {% for detail in home.details %}
+        {% if detail.type == "section" %}
+          <div class="character-detail-section-title">{{ detail.title }}</div>
+        {% else %}
+          <details class="character-profile-detail"{% if detail.open %} open{% endif %}>
+            <summary>{{ detail.title }}</summary>
+            <div class="character-detail-content">
+              {% if detail.text %}
+                <div class="character-detail-text">{{ detail.text | newline_to_br }}</div>
+              {% endif %}
+              {% if detail.images %}
+                <div class="character-detail-images character-detail-images-{{ detail.images | size }}">
+                  {% for image in detail.images %}
+                    <img src="{{ image | relative_url }}" alt="">
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          </details>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <div class="character-detail-section-title">{{ home.details_title | default: "DETAILS" }}</div>
+      <div class="home-details-content">{{ home.details_text | default: "이곳에 홈페이지 소개와 메모를 적어주세요." | newline_to_br }}</div>
+    {% endif %}
   </section>
 </section>
 <script>(function(){var image=document.querySelector('[data-home-hero-image]');if(!image)return;function crop(){var box=image.parentElement,nw=image.naturalWidth,nh=image.naturalHeight,bw=box.clientWidth,bh=box.clientHeight;if(!nw||!nh||!bw||!bh)return;var ratio=bw/bh,maxW,maxH;if(nw/nh>ratio){maxH=nh;maxW=nh*ratio}else{maxW=nw;maxH=nw/ratio}var zoom=Math.max(1,Number(image.dataset.cropZoom)||1),w=maxW/zoom,h=maxH/zoom,x=(nw-w)*(Number(image.dataset.cropX)||0)/100,y=(nh-h)*(Number(image.dataset.cropY)||0)/100,scale=bw/w;image.style.width=nw*scale+'px';image.style.height=nh*scale+'px';image.style.left=-x*scale+'px';image.style.top=-y*scale+'px'}image.addEventListener('load',crop);window.addEventListener('resize',crop);if(image.complete)crop()})();</script>
