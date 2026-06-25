@@ -331,6 +331,11 @@ function findGroup(title, style) {
   }
   return group;
 }
+function pruneEmptyGroups() {
+  data.groups = (data.groups || []).filter(function (group) {
+    return group && group.items && group.items.length;
+  });
+}
 function addFact() {
   var label = val('factLabel');
   var value = val('factValue');
@@ -347,11 +352,11 @@ function addFact() {
   updateAll('Added card fact.');
 }function addProfile() {
   var groupTitle = val('profileGroup') || 'PROFILE';
-  var group = findGroup(groupTitle, '');
   var label = val('profileLabel');
   var value = val('profileValue');
   var note = val('profileNote');
   if (!label && !value && !note) return;
+  var group = findGroup(groupTitle, '');
   var item = { label: label || 'Item', value: value, note: note, note_break: val('profileNoteBreak') === 'true' };
   if (editing && editing.kind === 'groupItem') {
     var oldGroup = data.groups[editing.a];
@@ -741,6 +746,7 @@ function renderPreview() {
   if (activeTab === 'memo') body = renderMemoHtml();
   el('preview').innerHTML = body || card;
 }function buildMarkdown() {
+  pruneEmptyGroups();
   var meta = getMeta();
   var lines = ['---'];
   lines.push('layout: character');
@@ -847,6 +853,7 @@ function renderPreview() {
   return meta.fileName;
 }
 function getDraft() {
+  pruneEmptyGroups();
   var meta = {};
   fields.forEach(function (id) { meta[id] = el(id).value; });
   return { meta: meta, data: data };
@@ -888,6 +895,7 @@ function loadDraft() {
   fields.forEach(function (id) { if (draft.meta && draft.meta[id] != null) el(id).value = draft.meta[id]; });
   setVal('draftName', name);
   data = Object.assign({ facts: [], groups: [], details: [], stats: [], story: [], memo: [], aus: [] }, draft.data || {});
+  pruneEmptyGroups();
   updateAll('Draft loaded: ' + name);
 }
 function clearDraft() {
@@ -902,6 +910,7 @@ function clearDraft() {
   el('draftStatus').textContent = 'Draft deleted.';
 }
 function updateAll(message) {
+  pruneEmptyGroups();
   renderItems();
   renderPreview();
   buildMarkdown();
