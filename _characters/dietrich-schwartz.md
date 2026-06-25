@@ -15,10 +15,8 @@ profile_image: "assets/characters/dietrich/profile.png"
 card_facts:
   - label: "♡"
     value: "Katia"
-  - label: "Gender"
-    value: "Male"
-  - label: "Age"
-    value: "???"
+  - label: "Gender/Age"
+    value: "Male/???"
   - label: "Keyword"
     value: "#염세주의 #냉소 #능글 #인간혐오 #잔정많음 #전직군인 #강화인간"
 profile_groups:
@@ -64,6 +62,14 @@ profile_groups:
       - value: "염세주의"
       - value: "불가지론자"
       - value: "과학을 믿음"
+  - title: "Relation"
+    items:
+      - label: "연인♡"
+        value: "카디아 펠트루프"
+        note: "@비니"
+      - label: "친구"
+        value: "에버츠 베스퍼"
+        note: "@비니"
 profile_details:
   - title: "Emotions"
     type: "section"
