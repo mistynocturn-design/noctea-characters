@@ -67,6 +67,10 @@ profile_groups:
       - value: "랩실 죽순이"
       - value: "마이웨이"
       - value: "YOLO"
+  - title: "RELATION"
+    items:
+      - label: "-"
+        value: "-"
 profile_details:
   - title: "EMOTIONS"
     type: "section"
