@@ -51,8 +51,6 @@ profile_groups:
         value: "경찰"
         note: "(전직 특수군)"
   - title: "KEYWORD"
-    items:
-  - title: "KEYWORD"
     style: "keywords"
     items:
       - value: "백금발"
