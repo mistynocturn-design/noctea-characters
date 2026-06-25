@@ -15,8 +15,10 @@ profile_image: "assets/characters/dietrich/profile.png"
 card_facts:
   - label: "♡"
     value: "Katia"
-  - label: "Gender/Age"
-    value: "Male/???"
+  - label: "Gender"
+    value: "Male"
+  - label: "Age"
+    value: "???"
   - label: "Keyword"
     value: "#염세주의 #냉소 #능글 #인간혐오 #잔정많음 #전직군인 #강화인간"
 profile_groups:

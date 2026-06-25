@@ -143,7 +143,7 @@
             <div><label for="factValue">Value</label><input id="factValue" placeholder="Male"></div>
           </div>
           <div class="actions"><button id="addFactBtn" type="button">Add card fact</button></div>
-          <p class="small">The first three facts appear on the Characters card. All facts appear below the portrait on the detail page.</p>
+          <p class="small">The first four facts appear on the Characters card. All facts appear below the portrait on the detail page.</p>
         </div>
 
         <div class="builder-panel" data-panel="profile">
@@ -727,7 +727,7 @@ function renderPreview() {
   document.documentElement.style.setProperty('--section-text', meta.sectionText);
   document.documentElement.style.setProperty('--keyword-bg', meta.keywordBg);
   var facts = data.facts.length ? data.facts : [{label:'Gender',value:''},{label:'Age',value:''},{label:'Height',value:''}];
-  var cardFacts = renderFactsHtml(facts.slice(0, 3));
+  var cardFacts = renderFactsHtml(facts.slice(0, 4));
   var groups = renderGroupsHtml(data.groups);
   var activeTab = getActiveBuilderTab();
   var card = '<div class="preview-card"><div class="preview-card-img">' + imageHtml(meta.cardImage, meta.title) + '</div><div class="preview-card-body"><p class="preview-role">' + escapeHtml(meta.role || 'Role') + '</p><h3>' + escapeHtml(meta.title) + '</h3><dl class="preview-facts">' + cardFacts + '</dl></div></div>';

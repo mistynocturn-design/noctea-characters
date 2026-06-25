@@ -17,7 +17,7 @@ title: Characters
           {% if character.role %}<p class="character-card-role">{{ character.role }}</p>{% endif %}
           <h2>{{ character.title }}</h2>
           <dl class="character-card-facts">
-            {% for fact in character.card_facts limit: 3 %}
+            {% for fact in character.card_facts limit: 4 %}
               <div><dt>{{ fact.label }}</dt><dd>{{ fact.value }}</dd></div>
             {% endfor %}
           </dl>

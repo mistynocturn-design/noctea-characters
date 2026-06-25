@@ -2449,6 +2449,16 @@ a.sidebar-nav-item:focus {
   line-height: 1.38;
 }
 
+.character-card-facts div {
+  grid-template-columns: minmax(0, 3.85rem) minmax(0, 1fr);
+}
+
+.character-card-facts dt,
+.character-card-facts dd {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
 .character-info-list {
   gap: .24rem;
 }
