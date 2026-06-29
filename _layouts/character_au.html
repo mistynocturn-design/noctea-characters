@@ -7,7 +7,7 @@ layout: default
     <a class="character-tool-button" href="{{ site.baseurl }}/tools/character-au-manager.html?character={{ page.character_id }}" target="_blank" rel="noopener" aria-label="Open AU manager" title="Open AU manager">+</a>
   </div>
   <header class="character-header">
-    <a class="character-au-parent-link" href="{{ site.baseurl }}/characters/{{ page.character_id }}/">← {{ page.parent_title | default: 'Character' }}</a>
+    <a class="character-au-parent-link" href="{{ site.baseurl }}/characters/{{ page.character_id }}/">??{{ page.parent_title | default: 'Character' }}</a>
     <p class="character-kicker">Alternate Universe</p>
     <h1>{{ page.title }}</h1>
     {% if page.subtitle %}<p class="character-subtitle">{{ page.subtitle }}</p>{% endif %}
@@ -82,7 +82,7 @@ layout: default
         <article class="character-timeline-item">
           {% if item.date %}<time>{{ item.date }}</time>{% endif %}
           <h2>{{ item.title }}</h2>
-          <p>{{ item.text }}</p>
+          <p>{{ item.text | replace: '\n', '<br>' | newline_to_br }}</p>
         </article>
       {% endfor %}
       {% unless page.story %}<p class="character-au-empty">No story yet.</p>{% endunless %}
@@ -105,9 +105,9 @@ layout: default
 
 <div class="character-image-modal" hidden>
   <button class="character-image-modal-close" type="button" aria-label="Close image">×</button>
-  <button class="character-image-modal-nav prev" type="button" aria-label="Previous image">‹</button>
+  <button class="character-image-modal-nav prev" type="button" aria-label="Previous image">??/button>
   <img src="" alt="">
-  <button class="character-image-modal-nav next" type="button" aria-label="Next image">›</button>
+  <button class="character-image-modal-nav next" type="button" aria-label="Next image">??/button>
 </div>
 
 <script>

@@ -4,7 +4,7 @@ layout: default
 
 {% assign standalone_aus = site.character_aus | where: "character_id", page.slug | sort: "order" %}
 <article class="character-page" style="--character-accent: {{ page.accent | default: '#4e4a65' }}; --character-soft: {{ page.soft | default: '#e7e3d8' }}; --character-ink: {{ page.ink | default: '#161732' }}; --character-tab-color: {{ page.tab_color | default: page.accent | default: '#4e4a65' }}; --character-section-text: {{ page.section_text | default: page.soft | default: '#e7e3d8' }}; --character-keyword-bg: {{ page.keyword_bg | default: page.soft | default: '#e7e3d8' }};">
-  <a class="detail-back-link" href="{{ site.baseurl }}/characters/">← Characters</a>
+  <a class="detail-back-link" href="{{ site.baseurl }}/characters/">??Characters</a>
   <div class="character-detail-tools">
     <a class="character-tool-button" href="{{ site.baseurl }}/tools/character-manager.html" target="_blank" rel="noopener" aria-label="Open character manager" title="Open character manager">+</a>
   </div>
@@ -139,7 +139,7 @@ layout: default
         <article class="character-timeline-item">
           {% if item.date %}<time>{{ item.date }}</time>{% endif %}
           <h2>{{ item.title }}</h2>
-          <p>{{ item.text }}</p>
+          <p>{{ item.text | replace: '\n', '<br>' | newline_to_br }}</p>
         </article>
       {% endfor %}
     </div>
@@ -221,7 +221,7 @@ layout: default
     var modal = document.createElement('div');
     modal.className = 'character-image-modal';
     modal.hidden = true;
-    modal.innerHTML = '<button class="character-image-modal-close" type="button" aria-label="Close image">x</button><button class="character-image-modal-nav character-image-modal-prev" type="button" aria-label="Previous image">‹</button><img alt=""><button class="character-image-modal-nav character-image-modal-next" type="button" aria-label="Next image">›</button>';
+    modal.innerHTML = '<button class="character-image-modal-close" type="button" aria-label="Close image">x</button><button class="character-image-modal-nav character-image-modal-prev" type="button" aria-label="Previous image">??/button><img alt=""><button class="character-image-modal-nav character-image-modal-next" type="button" aria-label="Next image">??/button>';
     document.body.appendChild(modal);
 
     var modalImage = modal.querySelector('img');
