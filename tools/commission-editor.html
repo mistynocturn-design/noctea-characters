@@ -103,8 +103,9 @@
           <button type="button" data-before="### " data-after="" data-placeholder="소제목">소제목</button>
           <button type="button" data-before="> " data-after="" data-placeholder="강조 안내">안내 박스</button>
           <button type="button" data-before="- " data-after="" data-placeholder="목록 내용">목록</button>
+          <button type="button" id="insertIndent" data-custom="true">들여쓰기</button>
           <button type="button" data-before="**" data-after="**" data-placeholder="굵은 글자">굵게</button>
-          <button type="button" data-before="[" data-after="](https://example.com)" data-placeholder="링크 이름">링크</button>
+          <button type="button" id="insertLink" data-custom="true">링크</button>
           <button type="button" id="insertBodyImage" data-image="true">본문 이미지 첨부</button>
           <button type="button" data-divider="true">구분선</button>
         </div>
@@ -236,13 +237,16 @@
     function closeList(){if(list){html.push('</'+list+'>');list=''}}
     lines.forEach(function(line){
       var m;
-      if(/^### /.test(line)){closeList();html.push('<h3>'+inline(line.slice(4))+'</h3>')}
+      if(/^<div class="commission-indent" markdown="1">$/.test(line.trim())){closeList();html.push('<div class="commission-indent">')}
+      else if(/^<\/div>$/.test(line.trim())){closeList();html.push('</div>')}
+      else if(/^### /.test(line)){closeList();html.push('<h3>'+inline(line.slice(4))+'</h3>')}
       else if(/^## /.test(line)){closeList();html.push('<h2>'+inline(line.slice(3))+'</h2>')}
       else if(/^> /.test(line)){closeList();html.push('<blockquote>'+inline(line.slice(2))+'</blockquote>')}
       else if(/^---+$/.test(line.trim())){closeList();html.push('<hr>')}
       else if((m=line.match(/^- (.+)/))){if(list!=='ul'){closeList();list='ul';html.push('<ul>')}html.push('<li>'+inline(m[1])+'</li>')}
       else if((m=line.match(/^\d+\. (.+)/))){if(list!=='ol'){closeList();list='ol';html.push('<ol>')}html.push('<li>'+inline(m[1])+'</li>')}
       else if(!line.trim()){closeList()}
+      else if(/^[①-⑳]\s*/.test(line)){closeList();html.push('<p class="commission-numbered-item">'+inline(line)+'</p>')}
       else{closeList();html.push('<p>'+inline(line)+'</p>')}
     });closeList();return html.join('');
   }
@@ -258,7 +262,7 @@
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
       '<link rel="stylesheet" href="/noctea-characters/public/css/poole.css">'+
       '<link rel="stylesheet" href="/noctea-characters/public/css/hyde.css">'+
-      '<style>body{background:#fff;margin:0}.content{margin:0!important;max-width:none!important;padding:18px!important;width:auto!important}.commission-article{max-width:760px}.detail-back-link{display:inline-block}.commission-content p,.commission-content li{white-space:pre-line}</style></head><body>'+
+      '<style>body{background:#fff;margin:0}.content{margin:0!important;max-width:none!important;padding:18px!important;width:auto!important}.commission-article{max-width:760px}.detail-back-link{display:inline-block}.commission-content p,.commission-content li{white-space:pre-line}.commission-numbered-item{padding-left:1.75em;text-indent:-1.75em}.commission-indent{margin:.75rem 0 .75rem 1.9rem}</style></head><body>'+
       '<main class="content"><article class="commission-article status-'+(open?'open':'closed')+'" style="--commission-accent:'+escapeHtml(f.accent.value)+';--commission-soft:'+escapeHtml(f.soft.value)+';">'+
       '<a class="detail-back-link" href="#">← Commission</a>'+
       (cover?'<figure class="commission-cover"><img src="'+escapeHtml(previewSrc(cover))+'" alt=""></figure>':'')+
@@ -304,7 +308,21 @@
     var markdownImages=paths.map(function(path,index){return '!['+(files[index].name||'이미지')+']('+path+')'}).join('\n\n');
     f.body.setRangeText(markdownImages,f.body.selectionStart,f.body.selectionEnd,'end');f.body.focus();save();render();message.textContent=paths.length+'개 본문 이미지를 첨부했습니다.';
   }
-  document.querySelectorAll('.toolbar button').forEach(function(button){button.addEventListener('click',function(){if(button.dataset.image)return;var start=f.body.selectionStart,end=f.body.selectionEnd,selected=f.body.value.slice(start,end)||button.dataset.placeholder||'',insert=button.dataset.divider?'\n---\n':(button.dataset.before||'')+selected+(button.dataset.after||'');f.body.setRangeText(insert,start,end,'end');f.body.focus();save();render()})});
+  document.querySelectorAll('.toolbar button').forEach(function(button){button.addEventListener('click',function(){if(button.dataset.image||button.dataset.custom)return;var start=f.body.selectionStart,end=f.body.selectionEnd,selected=f.body.value.slice(start,end)||button.dataset.placeholder||'',insert=button.dataset.divider?'\n\n---\n\n':(button.dataset.before||'')+selected+(button.dataset.after||'');f.body.setRangeText(insert,start,end,'end');f.body.focus();save();render()})});
+  document.getElementById('insertIndent').addEventListener('click',function(){
+    var start=f.body.selectionStart,end=f.body.selectionEnd,selected=f.body.value.slice(start,end).trim()||'들여쓴 내용';
+    f.body.setRangeText('\n\n<div class="commission-indent" markdown="1">\n\n'+selected+'\n\n</div>\n\n',start,end,'end');
+    f.body.focus();save();render();
+  });
+  document.getElementById('insertLink').addEventListener('click',function(){
+    var start=f.body.selectionStart,end=f.body.selectionEnd,selected=f.body.value.slice(start,end);
+    var url=window.prompt('연결할 주소를 입력하세요.','https://');
+    if(!url)return;
+    var label=selected||window.prompt('화면에 보일 링크 이름을 입력하세요.','링크');
+    if(!label)return;
+    f.body.setRangeText('['+label+']('+url.trim()+')',start,end,'end');
+    f.body.focus();save();render();
+  });
   document.getElementById('pickImage').addEventListener('click',function(){document.getElementById('imageFile').click()});
   document.getElementById('insertBodyImage').addEventListener('click',function(){document.getElementById('bodyImageFiles').click()});
   document.getElementById('imageFile').addEventListener('change',function(){if(this.files[0])addImage(this.files[0],'image');this.value=''});

@@ -47,3 +47,13 @@ layout: default
 
   {% if page.updated_at %}<p class="commission-updated">Updated {{ page.updated_at }}</p>{% endif %}
 </article>
+
+<script>
+(function(){
+  document.querySelectorAll('.commission-content > p, .commission-content .commission-indent > p').forEach(function(paragraph){
+    if(/^[①-⑳]\s*/.test(paragraph.textContent.trim())){
+      paragraph.classList.add('commission-numbered-item');
+    }
+  });
+})();
+</script>

@@ -3665,6 +3665,11 @@ a.sidebar-nav-item:active,
 .commission-content p,.commission-content ul,.commission-content ol{margin:.7rem 0}
 .commission-content p,.commission-content li{white-space:pre-line}
 .commission-content li+li{margin-top:.28rem}
+.commission-content .commission-numbered-item{padding-left:1.75em;text-indent:-1.75em}
+.commission-content .commission-indent{margin:.75rem 0 .75rem 1.9rem}
+.commission-content .commission-indent>:first-child{margin-top:0}
+.commission-content .commission-indent>:last-child{margin-bottom:0}
+.commission-content a{overflow-wrap:anywhere;text-decoration:underline;text-underline-offset:.18em}
 .commission-content blockquote,.commission-content .commission-callout{background:var(--commission-soft);border-left:4px solid var(--commission-accent);border-radius:0 9px 9px 0;color:#4f4852;margin:1rem 0;padding:.8rem 1rem}
 .commission-content blockquote p{margin:0}
 .commission-content hr{border:0;border-top:1px solid #e4dfe5;margin:2rem 0}
@@ -3674,5 +3679,6 @@ a.sidebar-nav-item:active,
 .commission-content th{background:var(--commission-soft)}
 .commission-content details{border:1px solid #e2dde4;border-radius:8px;margin:1rem 0;padding:.55rem .75rem}
 .commission-content summary{cursor:pointer;font-weight:800}
+@media(max-width:600px){.commission-content .commission-indent{margin-left:1.15rem}}
 .commission-updated{color:#9a929c;font-size:.62rem;margin:.75rem 0 0;text-align:right}
 @media(max-width:700px){.commission-board{grid-template-columns:1fr}.commission-article-header h1{font-size:1.8rem}}
