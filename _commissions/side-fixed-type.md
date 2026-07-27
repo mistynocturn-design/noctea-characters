@@ -9,7 +9,7 @@ slots_filled: 0
 price: "15,000원"
 format: "800x800 pxl, 300dpi"
 summary: "모비 공계에서 딱 한번 열었던 그 커미션"
-thumbnail: "/noctea-characters/assets/commission/commission/썸네일.png"
+thumbnail: "/noctea-characters/assets/commission/side-fixed-type/썸네일.png"
 cover_image: ""
 accent: "#3e563f"
 soft: "#efeae1"
@@ -40,7 +40,7 @@ updated_at: "2026-07-27"
 - 샘플 이미지는 사실 커미션을 전제로 두고 그린 그림들이 아니라서 진짜 휘갈긴 러프밖에 없긴 한데요.. 실제로 컨펌 과정에서 드리는 러프에는 신청서에 적어 주신 요소들을 모두 확인하실 수 있을 정도로 어느 정도 정돈해서 드립니다. 아래는 ’이 사람 러프는 이런 느낌이구나~(특히 흑발)‘ 정도로는 참고하실 수 있도록 함께 첨부해 보았습니다.
 
 ### 러프 참고
-![러프3.png](/noctea-characters/assets/commission/commission/러프3.png)
+![러프3.png](/noctea-characters/assets/commission/side-fixed-type/러프3.png)
 
 ## 신청서
 
@@ -51,4 +51,4 @@ updated_at: "2026-07-27"
 ④ **식물**: 최대 3종까지 가능합니다. 딱히 생각나는 게 없거나 정해두신 식물이 없는 경우 제가 캐릭터 이미지를 보고 임의로 그려드려요. 개인적으로 봤을 때에는 2종류가 들어가는 게 제일 예쁘고, 제시해주신 식물들만으로는 (제 능력의 한계로) 화면을 예쁘게 구성하기 어려운 경우 엑스트라 식물들을 추가로 그려드리기도 합니다. 엑스트라 식물의 경우 ‘이 꽃 뭐예요오~?‘ 하셔도 저도 이름 모르는 식물일 확률 매우 높음.
 
 ## 샘플
-![샘플4.png](/noctea-characters/assets/commission/commission/샘플4.png)
+![샘플4.png](/noctea-characters/assets/commission/side-fixed-type/샘플4.png)

@@ -3663,6 +3663,7 @@ a.sidebar-nav-item:active,
 .commission-content h2{border-bottom:1px solid #e8e3e9;color:#29242c;font-family:Paperlogy,system-ui,sans-serif;font-size:1.35rem;margin:2rem 0 .9rem;padding-bottom:.5rem}
 .commission-content h3{color:#3d3640;font-family:Paperlogy,system-ui,sans-serif;font-size:1.05rem;margin:1.55rem 0 .65rem}
 .commission-content p,.commission-content ul,.commission-content ol{margin:.7rem 0}
+.commission-content p,.commission-content li{white-space:pre-line}
 .commission-content li+li{margin-top:.28rem}
 .commission-content blockquote,.commission-content .commission-callout{background:var(--commission-soft);border-left:4px solid var(--commission-accent);border-radius:0 9px 9px 0;color:#4f4852;margin:1rem 0;padding:.8rem 1rem}
 .commission-content blockquote p{margin:0}

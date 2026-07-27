@@ -149,7 +149,7 @@
 
 ## 샘플
 
-![샘플 설명](/noctea-characters/assets/commission/sample.jpg)</textarea>
+본문 이미지 첨부 버튼으로 샘플을 추가해주세요.</textarea>
         <div class="actions">
           <button id="build" type="button">Markdown 만들기</button>
           <button id="copy" class="secondary" type="button">복사</button>
@@ -198,6 +198,17 @@
   function previewSrc(value){var path=safeUrl(value);return attachmentData[path]||path}
   function safeFileName(value){return String(value||'image').trim().replace(/\s+/g,'-').replace(/[^a-zA-Z0-9가-힣._-]/g,'-').replace(/-+/g,'-')}
   function assetPath(file){return '/noctea-characters/assets/commission/'+slug(f.slug.value)+'/'+safeFileName(file.name)}
+  function refreshAttachmentPaths(){
+    attachments.forEach(function(item){
+      var oldPath=item.path,newPath='/noctea-characters/assets/commission/'+slug(f.slug.value)+'/'+item.name;
+      if(oldPath===newPath)return;
+      if(f.thumbnail.value===oldPath)f.thumbnail.value=newPath;
+      if(f.coverImage.value===oldPath)f.coverImage.value=newPath;
+      f.body.value=f.body.value.split(oldPath).join(newPath);
+      attachmentData[newPath]=attachmentData[oldPath];delete attachmentData[oldPath];item.path=newPath;
+    });
+    renderAttachmentList();
+  }
   function readImage(file){return new Promise(function(resolve,reject){var reader=new FileReader();reader.onload=function(){resolve(reader.result)};reader.onerror=reject;reader.readAsDataURL(file)})}
   async function addImage(file,role){
     if(!file||!/^image\//.test(file.type)){message.textContent='이미지 파일만 선택할 수 있습니다.';return null}
@@ -250,7 +261,7 @@
     return '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
       '<link rel="stylesheet" href="/noctea-characters/public/css/poole.css">'+
       '<link rel="stylesheet" href="/noctea-characters/public/css/hyde.css">'+
-      '<style>body{background:#fff;margin:0}.content{margin:0!important;max-width:none!important;padding:18px!important;width:auto!important}.commission-article{max-width:760px}.detail-back-link{display:inline-block}</style></head><body>'+
+      '<style>body{background:#fff;margin:0}.content{margin:0!important;max-width:none!important;padding:18px!important;width:auto!important}.commission-article{max-width:760px}.detail-back-link{display:inline-block}.commission-content p,.commission-content li{white-space:pre-line}</style></head><body>'+
       '<main class="content"><article class="commission-article status-'+(open?'open':'closed')+'" style="--commission-accent:'+escapeHtml(f.accent.value)+';--commission-soft:'+escapeHtml(f.soft.value)+';">'+
       '<a class="detail-back-link" href="#">← Commission</a>'+
       (cover?'<figure class="commission-cover"><img src="'+escapeHtml(previewSrc(cover))+'" alt=""></figure>':'')+
@@ -321,7 +332,7 @@
   document.getElementById('build').addEventListener('click',function(){build();message.textContent='전체 게시글 Markdown을 만들었습니다.'});
   document.getElementById('copy').addEventListener('click',async function(){var text=build();try{await navigator.clipboard.writeText(text)}catch(error){output.focus();output.select();document.execCommand('copy')}message.textContent='Markdown을 복사했습니다.'});
   document.getElementById('download').addEventListener('click',function(){var blob=new Blob([build()],{type:'text/markdown;charset=utf-8'}),link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=slug(f.slug.value)+'.md';link.click();URL.revokeObjectURL(link.href);message.textContent=link.download+' 파일을 만들었습니다.'});
-  ids.forEach(function(id){f[id].addEventListener('input',function(){save();render()})});
+  ids.forEach(function(id){f[id].addEventListener('input',function(){if(id==='slug')refreshAttachmentPaths();save();render()})});
   load();build();
 })();
 </script>
