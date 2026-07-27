@@ -5,7 +5,7 @@ category: "Regular Type"
 order: 2
 status: "closed"
 slots_total: 2
-slots_filled: 1
+slots_filled: 2
 price: "18,000원 ~"
 format: "800x800~pxl(유동적 조절), 300dpi"
 work_period: "최소 7일 ~ 최대 40일"
