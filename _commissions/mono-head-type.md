@@ -6,7 +6,7 @@ order: 2
 status: "closed"
 slots_total: 2
 slots_filled: 2
-reservation_slots_open: 2
+reservation_slots_open: 1
 reservation_slots_closed: 1
 price: "18,000원 ~"
 format: "800x800~pxl(유동적 조절), 300dpi"

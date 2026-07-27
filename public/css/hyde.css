@@ -3648,10 +3648,8 @@ a.sidebar-nav-item:active,
 .commission-card-details div{display:grid;font-size:.67rem;gap:.45rem;grid-template-columns:3.7rem minmax(0,1fr)}
 .commission-card-details dt{color:#928a94;font-weight:800}
 .commission-card-details dd{color:#514b53;margin:0;overflow-wrap:anywhere}
-.commission-reservation-slots{display:flex;flex-wrap:wrap;gap:.35rem .75rem;margin:.7rem 0 0}
-.commission-reservation-slots span{color:#817986;font-size:.65rem}
-.commission-reservation-slots b{color:var(--commission-accent);font-weight:800}
-.commission-reservation-slots .commission-reservation-flowers{display:inline-flex;font-family:Georgia,serif;font-size:.92rem;gap:.22rem;letter-spacing:0;margin-left:auto;white-space:nowrap}
+.commission-reservation-slots{display:flex;justify-content:flex-end;margin:.7rem 0 0}
+.commission-reservation-slots .commission-reservation-flowers{display:inline-flex;font-family:Georgia,serif;font-size:.92rem;gap:.22rem;letter-spacing:0;white-space:nowrap}
 .commission-reservation-slots .commission-reservation-flowers b{color:#b7aeb9;color:color-mix(in srgb,var(--commission-soft) 68%,var(--commission-accent) 32%);font-style:normal}
 .commission-reservation-slots .commission-reservation-flowers i{color:#d4cdd6;color:color-mix(in srgb,var(--commission-soft) 88%,var(--commission-accent) 12%);font-style:normal}
 .commission-card-footer{align-items:flex-end;border-top:1px solid #eee9ef;display:flex;gap:.75rem;justify-content:space-between;margin-top:.8rem;padding-top:.7rem}
@@ -3672,7 +3670,7 @@ a.sidebar-nav-item:active,
 .commission-article-state .commission-open-badge.is-static{position:static}
 .commission-article-state .commission-flower-slots.is-large{background:var(--commission-soft);border-radius:999px;font-size:1.15rem;padding:.25rem .55rem}
 .commission-article-state small{color:#8d858f;font-size:.65rem}
-.commission-article-state .commission-reservation-slots.is-large{background:var(--commission-soft);border-radius:999px;margin:0;padding:.36rem .62rem}
+.commission-article-state .commission-reservation-slots.is-large{background:var(--commission-soft);border-radius:999px;margin:0;padding:.3rem .58rem}
 .commission-facts{background:var(--commission-soft);border-radius:10px;display:grid;gap:.35rem;margin:1rem 0 0;padding:.8rem .9rem}
 .commission-facts div{display:grid;font-size:.75rem;gap:.5rem;grid-template-columns:4.25rem 1fr}
 .commission-facts dt{color:#817986;font-weight:800}

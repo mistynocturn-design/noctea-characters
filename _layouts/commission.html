@@ -43,9 +43,12 @@ layout: default
       {% endif %}
       {% if reservation_total > 0 %}
         <span class="commission-reservation-slots is-large" aria-label="예약 가능 {{ reservation_open }}개, 예약 마감 {{ reservation_closed }}개">
-          <span><b>예약 가능</b> {{ reservation_open }}</span>
-          <span><b>예약 마감</b> {{ reservation_closed }}</span>
+          <span class="commission-reservation-flowers" aria-hidden="true">
+            {% if reservation_closed > 0 %}{% for slot in (1..reservation_closed) %}<b>✿</b>{% endfor %}{% endif %}
+            {% if reservation_open > 0 %}{% for slot in (1..reservation_open) %}<i>❀</i>{% endfor %}{% endif %}
+          </span>
         </span>
+        <small>✿ 예약 마감 · ❀ 예약 가능</small>
       {% endif %}
     </div>
 
