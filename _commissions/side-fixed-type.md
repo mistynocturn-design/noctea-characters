@@ -5,7 +5,9 @@ category: "YCH Type"
 order: 1
 status: "open"
 slots_total: 3
-slots_filled: 0
+slots_filled: 1
+reservation_slots_open: 0
+reservation_slots_closed: 0
 price: "15,000원"
 format: "800x800 pxl, 300dpi"
 work_period: "최소 3일 ~ 최대 30일"
