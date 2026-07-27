@@ -60,7 +60,10 @@
     .preview-details div{display:grid;font-size:.68rem;gap:7px;grid-template-columns:58px minmax(0,1fr)}
     .preview-details dt{color:#928a94;font-weight:800}.preview-details dd{color:#514b53;margin:0}
     .preview-reservations{display:flex;flex-wrap:wrap;gap:6px 12px;margin:10px 0 0}
-    .preview-reservations span{color:#817986;font-size:.67rem}.preview-reservations b{color:var(--accent)}
+    .preview-reservations>span:not(.reservation-flowers){color:#817986;font-size:.67rem}.preview-reservations b{color:var(--accent)}
+    .reservation-flowers{display:inline-flex;font-family:Georgia,serif;font-size:.98rem;gap:.22rem;margin-left:auto}
+    .reservation-flowers .closed{color:#b7aeb9;color:color-mix(in srgb,var(--soft) 68%,var(--accent) 32%)}
+    .reservation-flowers .open{color:#d4cdd6;color:color-mix(in srgb,var(--soft) 88%,var(--accent) 12%)}
     .card-footer{align-items:center;border-top:1px solid #eee9ef;display:flex;justify-content:space-between;padding-top:10px}
     .preview-price{color:var(--accent);font-size:.78rem;font-weight:800}
     .flowers{display:inline-flex;font-family:Georgia,serif;font-size:1.05rem;gap:.28rem;letter-spacing:0}.flowers .filled{color:var(--accent)}.flowers .empty{color:#bdb5c0}
@@ -199,6 +202,7 @@
             <div class="preview-reservations" id="previewReservations">
               <span><b>예약 가능</b> <span id="previewReservationOpen"></span></span>
               <span><b>예약 마감</b> <span id="previewReservationClosed"></span></span>
+              <span class="reservation-flowers" id="previewReservationFlowers" aria-hidden="true"></span>
             </div>
             <div class="card-footer"><span class="preview-price" id="previewPrice"></span><span class="flowers" id="previewFlowers"></span></div>
           </div>
@@ -285,6 +289,12 @@
       open:Math.max(0,Math.min(20,parseInt(f.reservationSlotsOpen.value,10)||0)),
       closed:Math.max(0,Math.min(20,parseInt(f.reservationSlotsClosed.value,10)||0))
     };
+  }
+  function reservationFlowers(){
+    var r=reservationSlots(),html='';
+    for(var i=0;i<r.closed;i++)html+='<span class="closed">✿</span>';
+    for(var j=0;j<r.open;j++)html+='<span class="open">❀</span>';
+    return html;
   }
   function statusInfo(){
     return{
@@ -395,6 +405,8 @@
     document.getElementById('previewWorkPeriodRow').hidden=!f.workPeriod.value.trim();
     document.getElementById('previewReservationOpen').textContent=r.open;
     document.getElementById('previewReservationClosed').textContent=r.closed;
+    document.getElementById('previewReservationFlowers').innerHTML=reservationFlowers();
+    document.getElementById('previewReservations').setAttribute('aria-label','예약 가능 '+r.open+'개, 예약 마감 '+r.closed+'개');
     document.getElementById('previewReservations').hidden=!(r.open+r.closed);
     document.getElementById('previewPrice').textContent=f.price.value;
     document.getElementById('previewFlowers').innerHTML=flowers();
