@@ -1,7 +1,7 @@
 ---
 layout: commission
 title: "측면 반고정틀 타입"
-category: "Fixed-pose type"
+category: "YCH Type"
 order: 1
 status: "open"
 slots_total: 3
