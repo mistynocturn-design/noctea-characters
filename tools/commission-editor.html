@@ -52,7 +52,7 @@
     .preview-summary{color:#6d6670;font-size:.76rem;line-height:1.55}
     .card-footer{align-items:center;border-top:1px solid #eee9ef;display:flex;justify-content:space-between;padding-top:10px}
     .preview-price{color:var(--accent);font-size:.78rem;font-weight:800}
-    .flowers{font-family:Georgia,serif;font-size:1.05rem;letter-spacing:-1px}.flowers .filled{color:var(--accent)}.flowers .empty{color:#bdb5c0}
+    .flowers{display:inline-flex;font-family:Georgia,serif;font-size:1.05rem;gap:.28rem;letter-spacing:0}.flowers .filled{color:var(--accent)}.flowers .empty{color:#bdb5c0}
     .detail-frame{background:#fff;border:1px solid #e2dde4;border-radius:11px;height:780px;margin-top:8px;width:100%}
     @media(max-width:900px){.layout{grid-template-columns:1fr}}
     @media(max-width:560px){.grid{grid-template-columns:1fr}}
@@ -67,10 +67,10 @@
     <ul>
       <li>커미션 타입 하나당 <code>_commissions/파일명.md</code> 한 개를 만듭니다.</li>
       <li>이미지를 첨부하기 전에 게시글의 <strong>파일명</strong>을 먼저 정해주세요.</li>
-      <li>썸네일·커버·본문 이미지는 파일 선택이나 드래그앤드롭으로 첨부할 수 있습니다.</li>
+      <li>대표 이미지는 목록 카드와 상세 페이지 상단에 함께 사용됩니다. 본문 이미지는 파일 선택이나 드래그앤드롭으로 추가할 수 있습니다.</li>
       <li>첨부 후 <strong>이미지를 repo에 저장</strong>을 누르고 <code>noctea-characters</code> 폴더를 선택하면 <code>assets/commission/파일명/</code>이 자동으로 만들어집니다.</li>
       <li>제목, 인용문, 목록, 링크, 이미지 버튼으로 긴 공지를 구성할 수 있습니다.</li>
-      <li>선점된 슬롯은 ✿, 빈 슬롯은 ❀로 표시됩니다.</li>
+      <li>접수된 슬롯은 ✿, 빈 슬롯은 ❀로 표시됩니다.</li>
     </ul>
   </details>
 
@@ -86,15 +86,14 @@
           <div class="field"><label for="commissionStatus">신청 상태</label><select id="commissionStatus"><option value="open">신청 가능</option><option value="closed" selected>신청 마감</option></select></div>
           <div class="field"><label for="price">가격</label><input id="price" value="Details coming soon"></div>
           <div class="field"><label for="slotsTotal">전체 슬롯</label><input id="slotsTotal" type="number" min="0" max="20" value="5"></div>
-          <div class="field"><label for="slotsFilled">선점된 슬롯</label><input id="slotsFilled" type="number" min="0" max="20" value="3"></div>
+          <div class="field"><label for="slotsFilled">접수된 슬롯</label><input id="slotsFilled" type="number" min="0" max="20" value="3"></div>
           <div class="field"><label for="format">작업 사양</label><input id="format" placeholder="800×800 px, 300dpi"></div>
           <div class="field"><label for="updatedAt">업데이트 날짜</label><input id="updatedAt" type="date"></div>
           <div class="field"><label for="accent">강조색</label><input id="accent" type="color" value="#6d5c73"></div>
           <div class="field"><label for="soft">보조색</label><input id="soft" type="color" value="#f3eef4"></div>
         </div>
         <div class="field"><label for="summary">목록에 보일 요약</label><input id="summary" value="신청 안내를 준비하고 있습니다."></div>
-        <div class="field"><label for="thumbnail">목록 썸네일 이미지</label><div class="file-row"><input id="thumbnail" placeholder="/noctea-characters/assets/commission/commission/thumbnail.jpg"><button class="secondary" id="pickThumbnail" type="button">파일 선택</button></div><input id="thumbnailFile" type="file" accept="image/*" hidden></div>
-        <div class="field"><label for="coverImage">상세 페이지 상단 이미지</label><div class="file-row"><input id="coverImage" placeholder="/noctea-characters/assets/commission/commission/cover.jpg"><button class="secondary" id="pickCover" type="button">파일 선택</button></div><input id="coverFile" type="file" accept="image/*" hidden></div>
+        <div class="field"><label for="image">대표 이미지 (목록·상세 공용)</label><div class="file-row"><input id="image" placeholder="/noctea-characters/assets/commission/commission/image.jpg"><button class="secondary" id="pickImage" type="button">파일 선택</button></div><input id="imageFile" type="file" accept="image/*" hidden></div>
       </div>
 
       <div class="panel">
@@ -184,7 +183,7 @@
 </main>
 <script>
 (function(){
-  var ids=['title','slug','category','order','commissionStatus','price','slotsTotal','slotsFilled','format','updatedAt','accent','soft','summary','thumbnail','coverImage','body'];
+  var ids=['title','slug','category','order','commissionStatus','price','slotsTotal','slotsFilled','format','updatedAt','accent','soft','summary','image','body'];
   var f={};ids.forEach(function(id){f[id]=document.getElementById(id)});
   var output=document.getElementById('output'),message=document.getElementById('statusMessage'),storageKey='noctea-commission-post-editor-v2';
   var attachments=[],attachmentData={};
@@ -202,8 +201,7 @@
     attachments.forEach(function(item){
       var oldPath=item.path,newPath='/noctea-characters/assets/commission/'+slug(f.slug.value)+'/'+item.name;
       if(oldPath===newPath)return;
-      if(f.thumbnail.value===oldPath)f.thumbnail.value=newPath;
-      if(f.coverImage.value===oldPath)f.coverImage.value=newPath;
+      if(f.image.value===oldPath)f.image.value=newPath;
       f.body.value=f.body.value.split(oldPath).join(newPath);
       attachmentData[newPath]=attachmentData[oldPath];delete attachmentData[oldPath];item.path=newPath;
     });
@@ -217,13 +215,12 @@
     attachments=attachments.filter(function(item){return item.path!==path});
     attachments.push({file:file,name:safeFileName(file.name),path:path,role:role});
     attachmentData[path]=data;
-    if(role==='thumbnail')f.thumbnail.value=path;
-    if(role==='cover')f.coverImage.value=path;
+    if(role==='image')f.image.value=path;
     renderAttachmentList();save();render();return path;
   }
   function renderAttachmentList(){
     var list=document.getElementById('attachmentList');list.innerHTML='';
-    var labels={thumbnail:'썸네일',cover:'커버',body:'본문'};
+    var labels={image:'대표 이미지',body:'본문'};
     attachments.forEach(function(item){var li=document.createElement('li');li.textContent=(labels[item.role]||'이미지')+' · '+item.path;list.appendChild(li)})
   }
   function inline(text){
@@ -250,7 +247,7 @@
     });closeList();return html.join('');
   }
   function detailDocument(){
-    var open=f.commissionStatus.value==='open',badgeText=open?'신청 가능':'신청 마감',cover=f.coverImage.value.trim(),s=slots();
+    var open=f.commissionStatus.value==='open',badgeText=open?'신청 가능':'신청 마감',cover=f.image.value.trim(),s=slots();
     var facts='';
     if(f.price.value.trim()||f.format.value.trim()){
       facts='<dl class="commission-facts">'+
@@ -269,13 +266,13 @@
       '<h1>'+escapeHtml(f.title.value||'Untitled')+'</h1>'+
       (f.summary.value?'<p class="commission-article-summary">'+escapeHtml(f.summary.value)+'</p>':'')+
       '<div class="commission-article-state"><span class="commission-open-badge is-static"><i aria-hidden="true"></i>'+badgeText+'</span>'+
-      (s.total?'<span class="commission-flower-slots is-large">'+detailFlowers()+'</span><small>✿ 선점 · ❀ 빈 슬롯</small>':'')+
+      (s.total?'<span class="commission-flower-slots is-large">'+detailFlowers()+'</span><small>✿ 접수 · ❀ 빈 슬롯</small>':'')+
       '</div>'+facts+'</header><div class="commission-content">'+markdown(f.body.value)+'</div>'+
       (f.updatedAt.value?'<p class="commission-updated">Updated '+escapeHtml(f.updatedAt.value)+'</p>':'')+
       '</article></main></body></html>';
   }
   function render(){
-    var open=f.commissionStatus.value==='open',badgeText=open?'신청 가능':'신청 마감',thumb=f.thumbnail.value.trim();
+    var open=f.commissionStatus.value==='open',badgeText=open?'신청 가능':'신청 마감',thumb=f.image.value.trim();
     document.documentElement.style.setProperty('--accent',f.accent.value);document.documentElement.style.setProperty('--soft',f.soft.value);
     var badge=document.getElementById('previewBadge');badge.classList.toggle('open',open);badge.querySelector('span').textContent=badgeText;
     document.getElementById('previewCategory').textContent=f.category.value||'Commission';
@@ -294,13 +291,13 @@
       'order: '+(parseInt(f.order.value,10)||0),'status: '+yaml(f.commissionStatus.value),
       'slots_total: '+s.total,'slots_filled: '+s.filled,'price: '+yaml(f.price.value.trim()),
       'format: '+yaml(f.format.value.trim()),'summary: '+yaml(f.summary.value.trim()),
-      'thumbnail: '+yaml(f.thumbnail.value.trim()),'cover_image: '+yaml(f.coverImage.value.trim()),
+      'image: '+yaml(f.image.value.trim()),
       'accent: '+yaml(f.accent.value),'soft: '+yaml(f.soft.value),'updated_at: '+yaml(f.updatedAt.value),
       '---','',f.body.value.trim(),''
     ].join('\n');save();render();return output.value
   }
   function save(){var state={};ids.forEach(function(id){state[id]=f[id].value});try{localStorage.setItem(storageKey,JSON.stringify(state))}catch(error){}}
-  function load(){try{var state=JSON.parse(localStorage.getItem(storageKey)||'{}');ids.forEach(function(id){if(Object.prototype.hasOwnProperty.call(state,id))f[id].value=state[id]})}catch(error){}if(!f.updatedAt.value)f.updatedAt.value=new Date().toISOString().slice(0,10)}
+  function load(){try{var state=JSON.parse(localStorage.getItem(storageKey)||'{}');if(!state.image&&(state.thumbnail||state.coverImage))state.image=state.thumbnail||state.coverImage;ids.forEach(function(id){if(Object.prototype.hasOwnProperty.call(state,id))f[id].value=state[id]})}catch(error){}if(!f.updatedAt.value)f.updatedAt.value=new Date().toISOString().slice(0,10)}
   async function addBodyImages(files){
     var paths=[];for(var i=0;i<files.length;i++){var path=await addImage(files[i],'body');if(path)paths.push(path)}
     if(!paths.length)return;
@@ -308,11 +305,9 @@
     f.body.setRangeText(markdownImages,f.body.selectionStart,f.body.selectionEnd,'end');f.body.focus();save();render();message.textContent=paths.length+'개 본문 이미지를 첨부했습니다.';
   }
   document.querySelectorAll('.toolbar button').forEach(function(button){button.addEventListener('click',function(){if(button.dataset.image)return;var start=f.body.selectionStart,end=f.body.selectionEnd,selected=f.body.value.slice(start,end)||button.dataset.placeholder||'',insert=button.dataset.divider?'\n---\n':(button.dataset.before||'')+selected+(button.dataset.after||'');f.body.setRangeText(insert,start,end,'end');f.body.focus();save();render()})});
-  document.getElementById('pickThumbnail').addEventListener('click',function(){document.getElementById('thumbnailFile').click()});
-  document.getElementById('pickCover').addEventListener('click',function(){document.getElementById('coverFile').click()});
+  document.getElementById('pickImage').addEventListener('click',function(){document.getElementById('imageFile').click()});
   document.getElementById('insertBodyImage').addEventListener('click',function(){document.getElementById('bodyImageFiles').click()});
-  document.getElementById('thumbnailFile').addEventListener('change',function(){if(this.files[0])addImage(this.files[0],'thumbnail');this.value=''});
-  document.getElementById('coverFile').addEventListener('change',function(){if(this.files[0])addImage(this.files[0],'cover');this.value=''});
+  document.getElementById('imageFile').addEventListener('change',function(){if(this.files[0])addImage(this.files[0],'image');this.value=''});
   document.getElementById('bodyImageFiles').addEventListener('change',function(){addBodyImages(Array.from(this.files));this.value=''});
   f.body.addEventListener('dragover',function(event){event.preventDefault();f.body.classList.add('drop-active')});
   f.body.addEventListener('dragleave',function(){f.body.classList.remove('drop-active')});

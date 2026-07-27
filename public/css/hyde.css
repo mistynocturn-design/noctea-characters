@@ -3639,14 +3639,14 @@ a.sidebar-nav-item:active,
 .commission-summary{color:#6d6670;display:-webkit-box;font-size:.75rem;line-height:1.6;margin:.55rem 0 0;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2}
 .commission-card-footer{align-items:flex-end;border-top:1px solid #eee9ef;display:flex;gap:.75rem;justify-content:space-between;margin-top:.8rem;padding-top:.7rem}
 .commission-price{color:var(--commission-accent);font-size:.78rem;font-weight:800}
-.commission-flower-slots{display:inline-flex;font-family:Georgia,serif;font-size:1rem;gap:.08rem;letter-spacing:-.02em;white-space:nowrap}
+.commission-flower-slots{display:inline-flex;font-family:Georgia,serif;font-size:1rem;gap:.28rem;letter-spacing:0;white-space:nowrap}
 .commission-flower-slots b{color:var(--commission-accent);font-style:normal}
 .commission-flower-slots i{color:#bdb5c0;font-style:normal}
 .commission-empty{background:#f7f5f7;border:1px dashed #d7d0d9;border-radius:10px;color:#716a75;font-size:.8rem;padding:2rem;text-align:center}
 .commission-empty p{margin-top:0}
 
 .commission-article{max-width:760px}
-.commission-cover{aspect-ratio:16/6;background:var(--commission-soft);border-radius:12px;margin:1rem 0 1.25rem;overflow:hidden}
+.commission-cover{aspect-ratio:16/8;background:var(--commission-soft);border-radius:12px;margin:1rem 0 1.25rem;overflow:hidden}
 .commission-cover img{height:100%;object-fit:cover;width:100%}
 .commission-article-header{border-bottom:1px solid #e4dfe5;padding:1.1rem 0 1.3rem}
 .commission-article-header h1{color:#252128;font-family:Paperlogy,system-ui,sans-serif;font-size:2.25rem;font-weight:800;letter-spacing:-.04em;line-height:1.25;margin:.15rem 0 0}

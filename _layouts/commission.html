@@ -3,6 +3,7 @@ layout: default
 ---
 
 {% assign status = page.status | default: "closed" %}
+{% assign commission_image = page.image | default: page.cover_image | default: page.thumbnail %}
 {% assign total = page.slots_total | default: 5 | plus: 0 %}
 {% assign filled = page.slots_filled | default: 0 | plus: 0 %}
 {% if filled < 0 %}{% assign filled = 0 %}{% endif %}
@@ -11,8 +12,8 @@ layout: default
 <article class="commission-article status-{{ status }}" style="--commission-accent:{{ page.accent | default: '#6d5c73' }};--commission-soft:{{ page.soft | default: '#f3eef4' }};">
   <a class="detail-back-link" href="{{ site.baseurl }}/commission/">← Commission</a>
 
-  {% if page.cover_image %}
-    <figure class="commission-cover"><img src="{{ page.cover_image | relative_url }}" alt=""></figure>
+  {% if commission_image %}
+    <figure class="commission-cover"><img src="{{ commission_image | remove_first: site.baseurl | relative_url }}" alt=""></figure>
   {% endif %}
 
   <header class="commission-article-header">
@@ -25,10 +26,10 @@ layout: default
         {% if status == "open" %}<i aria-hidden="true"></i> 신청 가능{% else %}<i aria-hidden="true"></i> 신청 마감{% endif %}
       </span>
       {% if total > 0 %}
-        <span class="commission-flower-slots is-large" aria-label="총 {{ total }}개 중 {{ filled }}개 선점">
+        <span class="commission-flower-slots is-large" aria-label="총 {{ total }}개 중 {{ filled }}개 접수">
           {% for slot in (1..total) %}{% if slot <= filled %}<b aria-hidden="true">✿</b>{% else %}<i aria-hidden="true">❀</i>{% endif %}{% endfor %}
         </span>
-        <small>✿ 선점 · ❀ 빈 슬롯</small>
+        <small>✿ 접수 · ❀ 빈 슬롯</small>
       {% endif %}
     </div>
 

@@ -18,6 +18,7 @@ title: Commission
     <div class="commission-board">
       {% for commission in commission_posts %}
         {% assign status = commission.status | default: "closed" %}
+        {% assign commission_image = commission.image | default: commission.thumbnail | default: commission.cover_image %}
         {% assign total = commission.slots_total | default: 5 | plus: 0 %}
         {% assign filled = commission.slots_filled | default: 0 | plus: 0 %}
         {% if filled < 0 %}{% assign filled = 0 %}{% endif %}
@@ -25,8 +26,8 @@ title: Commission
         <article class="commission-post-card status-{{ status }}" style="--commission-accent:{{ commission.accent | default: '#6d5c73' }};--commission-soft:{{ commission.soft | default: '#f3eef4' }};">
           <a class="commission-post-link" href="{{ commission.url | relative_url }}">
             <div class="commission-thumbnail">
-              {% if commission.thumbnail %}
-                <img src="{{ commission.thumbnail | relative_url }}" alt="">
+              {% if commission_image %}
+                <img src="{{ commission_image | remove_first: site.baseurl | relative_url }}" alt="">
               {% else %}
                 <span class="commission-thumbnail-placeholder">{{ commission.title | slice: 0 }}</span>
               {% endif %}
@@ -41,7 +42,7 @@ title: Commission
               <div class="commission-card-footer">
                 {% if commission.price %}<strong class="commission-price">{{ commission.price }}</strong>{% endif %}
                 {% if total > 0 %}
-                  <span class="commission-flower-slots" aria-label="총 {{ total }}개 중 {{ filled }}개 선점">
+                  <span class="commission-flower-slots" aria-label="총 {{ total }}개 중 {{ filled }}개 접수">
                     {% for slot in (1..total) %}{% if slot <= filled %}<b aria-hidden="true">✿</b>{% else %}<i aria-hidden="true">❀</i>{% endif %}{% endfor %}
                   </span>
                 {% endif %}
