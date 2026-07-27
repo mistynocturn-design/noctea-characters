@@ -39,6 +39,12 @@ title: Commission
               <p class="commission-type-label">{{ commission.category | default: "Commission" }}</p>
               <h2>{{ commission.title }}</h2>
               {% if commission.summary %}<p class="commission-summary">{{ commission.summary }}</p>{% endif %}
+              {% if commission.format or commission.work_period %}
+                <dl class="commission-card-details">
+                  {% if commission.format %}<div><dt>작업 사양</dt><dd>{{ commission.format }}</dd></div>{% endif %}
+                  {% if commission.work_period %}<div><dt>작업 기간</dt><dd>{{ commission.work_period }}</dd></div>{% endif %}
+                </dl>
+              {% endif %}
               <div class="commission-card-footer">
                 {% if commission.price %}<strong class="commission-price">{{ commission.price }}</strong>{% endif %}
                 {% if total > 0 %}

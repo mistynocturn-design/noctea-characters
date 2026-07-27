@@ -8,6 +8,7 @@ slots_total: 3
 slots_filled: 0
 price: "15,000원"
 format: "800x800 pxl, 300dpi"
+work_period: "접수 후 2주 이내"
 summary: "모비 공계에서 딱 한번 열었던 그 커미션"
 image: "/noctea-characters/assets/commission/side-fixed-type/썸네일.png"
 accent: "#3e563f"

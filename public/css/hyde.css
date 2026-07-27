@@ -3637,6 +3637,10 @@ a.sidebar-nav-item:active,
 .commission-type-label{color:#8a818d;font-size:.62rem;font-weight:800;letter-spacing:.1em;margin:0 0 .25rem;text-transform:uppercase}
 .commission-post-copy h2{color:#29242c;font-family:Paperlogy,system-ui,sans-serif;font-size:1.08rem;line-height:1.35;margin:0}
 .commission-summary{color:#6d6670;display:-webkit-box;font-size:.75rem;line-height:1.6;margin:.55rem 0 0;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.commission-card-details{display:grid;gap:.25rem;margin:.7rem 0 0}
+.commission-card-details div{display:grid;font-size:.67rem;gap:.45rem;grid-template-columns:3.7rem minmax(0,1fr)}
+.commission-card-details dt{color:#928a94;font-weight:800}
+.commission-card-details dd{color:#514b53;margin:0;overflow-wrap:anywhere}
 .commission-card-footer{align-items:flex-end;border-top:1px solid #eee9ef;display:flex;gap:.75rem;justify-content:space-between;margin-top:.8rem;padding-top:.7rem}
 .commission-price{color:var(--commission-accent);font-size:.78rem;font-weight:800}
 .commission-flower-slots{display:inline-flex;font-family:Georgia,serif;font-size:1rem;gap:.28rem;letter-spacing:0;white-space:nowrap}

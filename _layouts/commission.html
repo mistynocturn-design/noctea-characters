@@ -33,10 +33,11 @@ layout: default
       {% endif %}
     </div>
 
-    {% if page.price or page.format %}
+    {% if page.price or page.format or page.work_period %}
       <dl class="commission-facts">
         {% if page.price %}<div><dt>가격</dt><dd>{{ page.price }}</dd></div>{% endif %}
         {% if page.format %}<div><dt>작업 사양</dt><dd>{{ page.format }}</dd></div>{% endif %}
+        {% if page.work_period %}<div><dt>작업 기간</dt><dd>{{ page.work_period }}</dd></div>{% endif %}
       </dl>
     {% endif %}
   </header>
