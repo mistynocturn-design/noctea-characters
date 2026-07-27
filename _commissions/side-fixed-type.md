@@ -17,8 +17,8 @@ updated_at: "2026-07-27"
 ---
 
 ## 오픈카톡
-① https://open.kakao.com/me/Noctea (기본 프로필, 혹은 오픈카톡 프로필 필요)
-② https://open.kakao.com/o/spoAp1Ph (카카오프렌즈로 입장 가능)
+① [오픈카톡1 (실명공개 위험 있음)](https://open.kakao.com/me/Noctea) (기본 프로필, 혹은 오픈카톡 프로필 필요)
+② [오픈카톡2](https://open.kakao.com/o/spoAp1Ph) (카카오프렌즈로 입장 가능)
 (신청은 오픈카톡으로만 받고 있습니다)
 
 ## 저작권 및 이용 범위
