@@ -3652,8 +3652,11 @@ a.sidebar-nav-item:active,
 .commission-reservation-slots .commission-reservation-flowers{display:inline-flex;font-family:Georgia,serif;font-size:.92rem;gap:.22rem;letter-spacing:0;white-space:nowrap}
 .commission-reservation-slots .commission-reservation-flowers b{color:#b7aeb9;color:color-mix(in srgb,var(--commission-soft) 68%,var(--commission-accent) 32%);font-style:normal}
 .commission-reservation-slots .commission-reservation-flowers i{color:#d4cdd6;color:color-mix(in srgb,var(--commission-soft) 88%,var(--commission-accent) 12%);font-style:normal}
-.commission-card-footer{align-items:flex-end;border-top:1px solid #eee9ef;display:flex;gap:.75rem;justify-content:space-between;margin-top:.8rem;padding-top:.7rem}
+.commission-card-footer{align-items:flex-start;border-top:1px solid #eee9ef;display:flex;gap:.75rem;justify-content:space-between;margin-top:.8rem;padding-top:.7rem}
 .commission-price{color:var(--commission-accent);font-size:.78rem;font-weight:800}
+.commission-card-slot-stack{align-items:flex-end;display:flex;flex-direction:column;gap:.22rem;margin-left:auto}
+.commission-card-slot-stack .commission-reservation-slots.is-card{align-items:center;gap:.38rem;margin:0}
+.commission-card-slot-stack .commission-reservation-slots.is-card small{color:#a098a2;font-size:.55rem;white-space:nowrap}
 .commission-flower-slots{display:inline-flex;font-family:Georgia,serif;font-size:1rem;gap:.28rem;letter-spacing:0;white-space:nowrap}
 .commission-flower-slots b{color:var(--commission-accent);font-style:normal}
 .commission-flower-slots i{color:#bdb5c0;font-style:normal}

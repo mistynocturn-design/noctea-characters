@@ -55,20 +55,25 @@ title: Commission
                   {% if commission.work_period %}<div><dt>작업 기간</dt><dd>{{ commission.work_period }}</dd></div>{% endif %}
                 </dl>
               {% endif %}
-              {% if reservation_total > 0 %}
-                <div class="commission-reservation-slots" aria-label="예약 가능 {{ reservation_open }}개, 예약 마감 {{ reservation_closed }}개">
-                  <span class="commission-reservation-flowers" aria-hidden="true">
-                    {% if reservation_closed > 0 %}{% for slot in (1..reservation_closed) %}<b>✿</b>{% endfor %}{% endif %}
-                    {% if reservation_open > 0 %}{% for slot in (1..reservation_open) %}<i>❀</i>{% endfor %}{% endif %}
-                  </span>
-                </div>
-              {% endif %}
               <div class="commission-card-footer">
                 {% if commission.price %}<strong class="commission-price">{{ commission.price }}</strong>{% endif %}
-                {% if total > 0 %}
-                  <span class="commission-flower-slots" aria-label="총 {{ total }}개 중 {{ filled }}개 접수">
-                    {% for slot in (1..total) %}{% if slot <= filled %}<b aria-hidden="true">✿</b>{% else %}<i aria-hidden="true">❀</i>{% endif %}{% endfor %}
-                  </span>
+                {% if total > 0 or reservation_total > 0 %}
+                  <div class="commission-card-slot-stack">
+                    {% if total > 0 %}
+                      <span class="commission-flower-slots" aria-label="총 {{ total }}개 중 {{ filled }}개 접수">
+                        {% for slot in (1..total) %}{% if slot <= filled %}<b aria-hidden="true">✿</b>{% else %}<i aria-hidden="true">❀</i>{% endif %}{% endfor %}
+                      </span>
+                    {% endif %}
+                    {% if reservation_total > 0 %}
+                      <span class="commission-reservation-slots is-card" aria-label="예약 가능 {{ reservation_open }}개, 예약 마감 {{ reservation_closed }}개">
+                        <small>예약 슬롯</small>
+                        <span class="commission-reservation-flowers" aria-hidden="true">
+                          {% if reservation_closed > 0 %}{% for slot in (1..reservation_closed) %}<b>✿</b>{% endfor %}{% endif %}
+                          {% if reservation_open > 0 %}{% for slot in (1..reservation_open) %}<i>❀</i>{% endfor %}{% endif %}
+                        </span>
+                      </span>
+                    {% endif %}
+                  </div>
                 {% endif %}
               </div>
             </div>

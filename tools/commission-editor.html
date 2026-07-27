@@ -59,11 +59,13 @@
     .preview-details{display:grid;gap:4px;margin:10px 0 0}
     .preview-details div{display:grid;font-size:.68rem;gap:7px;grid-template-columns:58px minmax(0,1fr)}
     .preview-details dt{color:#928a94;font-weight:800}.preview-details dd{color:#514b53;margin:0}
-    .preview-reservations{display:flex;justify-content:flex-end;margin:10px 0 0}
+    .preview-slot-stack{align-items:flex-end;display:flex;flex-direction:column;gap:4px;margin-left:auto}
+    .preview-reservations{align-items:center;display:flex;gap:6px}
+    .preview-reservations small{color:#a098a2;font-size:.58rem;white-space:nowrap}
     .reservation-flowers{display:inline-flex;font-family:Georgia,serif;font-size:.98rem;gap:.22rem;margin-left:auto}
     .reservation-flowers .closed{color:#b7aeb9;color:color-mix(in srgb,var(--soft) 68%,var(--accent) 32%);font-style:normal}
     .reservation-flowers .open{color:#d4cdd6;color:color-mix(in srgb,var(--soft) 88%,var(--accent) 12%);font-style:normal}
-    .card-footer{align-items:center;border-top:1px solid #eee9ef;display:flex;justify-content:space-between;padding-top:10px}
+    .card-footer{align-items:flex-start;border-top:1px solid #eee9ef;display:flex;justify-content:space-between;padding-top:10px}
     .preview-price{color:var(--accent);font-size:.78rem;font-weight:800}
     .flowers{display:inline-flex;font-family:Georgia,serif;font-size:1.05rem;gap:.28rem;letter-spacing:0}.flowers .filled{color:var(--accent)}.flowers .empty{color:#bdb5c0}
     .detail-frame{background:#fff;border:1px solid #e2dde4;border-radius:11px;height:780px;margin-top:8px;width:100%}
@@ -84,7 +86,7 @@
       <li>대표 이미지는 목록 카드와 상세 페이지 상단에 함께 사용됩니다. 본문 이미지는 파일 선택이나 드래그앤드롭으로 추가할 수 있습니다.</li>
       <li>첨부 후 <strong>이미지를 repo에 저장</strong>을 누르고 <code>noctea-characters</code> 폴더를 선택하면 <code>assets/commission/파일명/</code>이 자동으로 만들어집니다.</li>
       <li>제목, 인용문, 목록, 링크, 이미지 버튼으로 긴 공지를 구성할 수 있습니다.</li>
-      <li>접수된 슬롯은 ✿, 빈 슬롯은 ❀로 표시되며 예약 슬롯은 별도 숫자로 표시됩니다.</li>
+      <li>접수·예약 마감 슬롯은 ✿, 빈 슬롯과 예약 가능 슬롯은 ❀로 표시됩니다.</li>
     </ul>
   </details>
 
@@ -198,10 +200,16 @@
               <div id="previewFormatRow"><dt>작업 사양</dt><dd id="previewFormat"></dd></div>
               <div id="previewWorkPeriodRow"><dt>작업 기간</dt><dd id="previewWorkPeriod"></dd></div>
             </dl>
-            <div class="preview-reservations" id="previewReservations">
-              <span class="reservation-flowers" id="previewReservationFlowers" aria-hidden="true"></span>
+            <div class="card-footer">
+              <span class="preview-price" id="previewPrice"></span>
+              <div class="preview-slot-stack">
+                <span class="flowers" id="previewFlowers"></span>
+                <div class="preview-reservations" id="previewReservations">
+                  <small>예약 슬롯</small>
+                  <span class="reservation-flowers" id="previewReservationFlowers" aria-hidden="true"></span>
+                </div>
+              </div>
             </div>
-            <div class="card-footer"><span class="preview-price" id="previewPrice"></span><span class="flowers" id="previewFlowers"></span></div>
           </div>
         </article>
 
