@@ -49,13 +49,18 @@
     .thumb-letter{align-items:center;color:var(--accent);display:flex;font-family:Georgia,serif;font-size:3rem;height:100%;justify-content:center;opacity:.55}
     .preview-badge{align-items:center;background:rgba(255,255,255,.93);border-radius:999px;color:#555057;display:flex;font-size:.65rem;font-weight:800;gap:5px;padding:6px 9px;position:absolute;right:10px;top:10px}
     .preview-badge i{background:#969099;border-radius:50%;height:7px;width:7px}
-    .preview-badge.open{color:#35664a}.preview-badge.open i{background:#4b996b}
+    .preview-badge.status-open{color:#35664a}.preview-badge.status-open i{background:#4b996b}
+    .preview-badge.status-reservation{color:#66528d}.preview-badge.status-reservation i{background:#8069a8}
+    .preview-badge.status-temporary_closed{color:#8a622c}.preview-badge.status-temporary_closed i{background:#c18a3e}
+    .preview-badge.status-closed_final{color:#342f36}.preview-badge.status-closed_final i{background:#342f36}
     .card-copy{padding:14px}
     .card-copy h3{font-size:1.05rem;margin:0}
     .preview-summary{color:#6d6670;font-size:.76rem;line-height:1.55}
     .preview-details{display:grid;gap:4px;margin:10px 0 0}
     .preview-details div{display:grid;font-size:.68rem;gap:7px;grid-template-columns:58px minmax(0,1fr)}
     .preview-details dt{color:#928a94;font-weight:800}.preview-details dd{color:#514b53;margin:0}
+    .preview-reservations{display:flex;flex-wrap:wrap;gap:6px 12px;margin:10px 0 0}
+    .preview-reservations span{color:#817986;font-size:.67rem}.preview-reservations b{color:var(--accent)}
     .card-footer{align-items:center;border-top:1px solid #eee9ef;display:flex;justify-content:space-between;padding-top:10px}
     .preview-price{color:var(--accent);font-size:.78rem;font-weight:800}
     .flowers{display:inline-flex;font-family:Georgia,serif;font-size:1.05rem;gap:.28rem;letter-spacing:0}.flowers .filled{color:var(--accent)}.flowers .empty{color:#bdb5c0}
@@ -77,7 +82,7 @@
       <li>대표 이미지는 목록 카드와 상세 페이지 상단에 함께 사용됩니다. 본문 이미지는 파일 선택이나 드래그앤드롭으로 추가할 수 있습니다.</li>
       <li>첨부 후 <strong>이미지를 repo에 저장</strong>을 누르고 <code>noctea-characters</code> 폴더를 선택하면 <code>assets/commission/파일명/</code>이 자동으로 만들어집니다.</li>
       <li>제목, 인용문, 목록, 링크, 이미지 버튼으로 긴 공지를 구성할 수 있습니다.</li>
-      <li>접수된 슬롯은 ✿, 빈 슬롯은 ❀로 표시됩니다.</li>
+      <li>접수된 슬롯은 ✿, 빈 슬롯은 ❀로 표시되며 예약 슬롯은 별도 숫자로 표시됩니다.</li>
     </ul>
   </details>
 
@@ -99,10 +104,12 @@
           <div class="field"><label for="slug">파일명</label><input id="slug" value="commission" placeholder="portrait-template"></div>
           <div class="field"><label for="category">분류</label><input id="category" value="Commission type"></div>
           <div class="field"><label for="order">목록 순서</label><input id="order" type="number" min="0" value="1"></div>
-          <div class="field"><label for="commissionStatus">신청 상태</label><select id="commissionStatus"><option value="open">신청 가능</option><option value="closed" selected>신청 마감</option></select></div>
+          <div class="field"><label for="commissionStatus">신청 상태</label><select id="commissionStatus"><option value="open">신청 가능</option><option value="closed" selected>신청 마감</option><option value="reservation">예약 가능</option><option value="temporary_closed">임시 마감</option><option value="closed_final">CLOSED</option></select></div>
           <div class="field"><label for="price">가격</label><input id="price" value="Details coming soon"></div>
           <div class="field"><label for="slotsTotal">전체 슬롯</label><input id="slotsTotal" type="number" min="0" max="20" value="5"></div>
           <div class="field"><label for="slotsFilled">접수된 슬롯</label><input id="slotsFilled" type="number" min="0" max="20" value="3"></div>
+          <div class="field"><label for="reservationSlotsOpen">예약 가능 슬롯</label><input id="reservationSlotsOpen" type="number" min="0" max="20" value="0"></div>
+          <div class="field"><label for="reservationSlotsClosed">예약 마감 슬롯</label><input id="reservationSlotsClosed" type="number" min="0" max="20" value="0"></div>
           <div class="field"><label for="format">작업 사양</label><input id="format" placeholder="800×800 px, 300dpi"></div>
           <div class="field"><label for="workPeriod">작업 기간</label><input id="workPeriod" placeholder="접수 후 2주 이내"></div>
           <div class="field"><label for="updatedAt">업데이트 날짜</label><input id="updatedAt" type="date"></div>
@@ -189,6 +196,10 @@
               <div id="previewFormatRow"><dt>작업 사양</dt><dd id="previewFormat"></dd></div>
               <div id="previewWorkPeriodRow"><dt>작업 기간</dt><dd id="previewWorkPeriod"></dd></div>
             </dl>
+            <div class="preview-reservations" id="previewReservations">
+              <span><b>예약 가능</b> <span id="previewReservationOpen"></span></span>
+              <span><b>예약 마감</b> <span id="previewReservationClosed"></span></span>
+            </div>
             <div class="card-footer"><span class="preview-price" id="previewPrice"></span><span class="flowers" id="previewFlowers"></span></div>
           </div>
         </article>
@@ -205,7 +216,7 @@
 </main>
 <script>
 (function(){
-  var ids=['title','slug','category','order','commissionStatus','price','slotsTotal','slotsFilled','format','workPeriod','updatedAt','accent','soft','summary','image','body'];
+  var ids=['title','slug','category','order','commissionStatus','price','slotsTotal','slotsFilled','reservationSlotsOpen','reservationSlotsClosed','format','workPeriod','updatedAt','accent','soft','summary','image','body'];
   var f={};ids.forEach(function(id){f[id]=document.getElementById(id)});
   var output=document.getElementById('output'),message=document.getElementById('statusMessage'),storageKey='noctea-commission-post-editor-v2';
   var attachments=[],attachmentData={};
@@ -249,13 +260,14 @@
     });
     var defaults={
       title:'',category:'Commission type',order:'1',commissionStatus:'closed',price:'',
-      slotsTotal:'5',slotsFilled:'0',format:'',workPeriod:'',updatedAt:new Date().toISOString().slice(0,10),
+      slotsTotal:'5',slotsFilled:'0',reservationSlotsOpen:'0',reservationSlotsClosed:'0',format:'',workPeriod:'',updatedAt:new Date().toISOString().slice(0,10),
       accent:'#6d5c73',soft:'#f3eef4',summary:'',image:''
     };
     Object.keys(defaults).forEach(function(id){f[id].value=defaults[id]});
     var fields={
       title:'title',category:'category',order:'order',status:'commissionStatus',price:'price',
-      slots_total:'slotsTotal',slots_filled:'slotsFilled',format:'format',work_period:'workPeriod',
+      slots_total:'slotsTotal',slots_filled:'slotsFilled',reservation_slots_open:'reservationSlotsOpen',
+      reservation_slots_closed:'reservationSlotsClosed',format:'format',work_period:'workPeriod',
       updated_at:'updatedAt',accent:'accent',soft:'soft',summary:'summary'
     };
     Object.keys(fields).forEach(function(key){
@@ -268,6 +280,21 @@
     build();
   }
   function slots(){var total=Math.max(0,Math.min(20,parseInt(f.slotsTotal.value,10)||0)),filled=Math.max(0,Math.min(total,parseInt(f.slotsFilled.value,10)||0));return{total:total,filled:filled}}
+  function reservationSlots(){
+    return{
+      open:Math.max(0,Math.min(20,parseInt(f.reservationSlotsOpen.value,10)||0)),
+      closed:Math.max(0,Math.min(20,parseInt(f.reservationSlotsClosed.value,10)||0))
+    };
+  }
+  function statusInfo(){
+    return{
+      open:{key:'open',label:'신청 가능'},
+      closed:{key:'closed',label:'신청 마감'},
+      reservation:{key:'reservation',label:'예약 가능'},
+      temporary_closed:{key:'temporary_closed',label:'임시 마감'},
+      closed_final:{key:'closed_final',label:'CLOSED'}
+    }[f.commissionStatus.value]||{key:'closed',label:'신청 마감'};
+  }
   function flowers(){var s=slots(),html='';for(var i=1;i<=s.total;i++)html+=i<=s.filled?'<span class="filled">✿</span>':'<span class="empty">❀</span>';return html}
   function detailFlowers(){var s=slots(),html='';for(var i=1;i<=s.total;i++)html+=i<=s.filled?'<b aria-hidden="true">✿</b>':'<i aria-hidden="true">❀</i>';return html}
   function escapeHtml(value){return String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
@@ -328,7 +355,7 @@
     });closeList();return html.join('');
   }
   function detailDocument(){
-    var open=f.commissionStatus.value==='open',badgeText=open?'신청 가능':'신청 마감',cover=f.image.value.trim(),s=slots();
+    var state=statusInfo(),cover=f.image.value.trim(),s=slots(),r=reservationSlots();
     var facts='';
     if(f.price.value.trim()||f.format.value.trim()||f.workPeriod.value.trim()){
       facts='<dl class="commission-facts">'+
@@ -341,22 +368,24 @@
       '<link rel="stylesheet" href="/noctea-characters/public/css/poole.css">'+
       '<link rel="stylesheet" href="/noctea-characters/public/css/hyde.css">'+
       '<style>body{background:#fff;margin:0}.content{margin:0!important;max-width:none!important;padding:18px!important;width:auto!important}.commission-article{max-width:760px}.detail-back-link{display:inline-block}.commission-content p,.commission-content li{white-space:pre-line}.commission-numbered-item{padding-left:1.75em;text-indent:-1.75em}.commission-indent{margin:.75rem 0 .75rem 1.9rem}</style></head><body>'+
-      '<main class="content"><article class="commission-article status-'+(open?'open':'closed')+'" style="--commission-accent:'+escapeHtml(f.accent.value)+';--commission-soft:'+escapeHtml(f.soft.value)+';">'+
+      '<main class="content"><article class="commission-article status-'+state.key+'" style="--commission-accent:'+escapeHtml(f.accent.value)+';--commission-soft:'+escapeHtml(f.soft.value)+';">'+
       '<a class="detail-back-link" href="#">← Commission</a>'+
       (cover?'<figure class="commission-cover"><img src="'+escapeHtml(previewSrc(cover))+'" alt=""></figure>':'')+
       '<header class="commission-article-header"><p class="commission-type-label">'+escapeHtml(f.category.value||'Commission')+'</p>'+
       '<h1>'+escapeHtml(f.title.value||'Untitled')+'</h1>'+
       (f.summary.value?'<p class="commission-article-summary">'+escapeHtml(f.summary.value)+'</p>':'')+
-      '<div class="commission-article-state"><span class="commission-open-badge is-static"><i aria-hidden="true"></i>'+badgeText+'</span>'+
+      '<div class="commission-article-state"><span class="commission-open-badge is-static"><i aria-hidden="true"></i>'+state.label+'</span>'+
       (s.total?'<span class="commission-flower-slots is-large">'+detailFlowers()+'</span><small>✿ 접수 · ❀ 빈 슬롯</small>':'')+
+      (r.open+r.closed?'<span class="commission-reservation-slots is-large"><span><b>예약 가능</b> '+r.open+'</span><span><b>예약 마감</b> '+r.closed+'</span></span>':'')+
       '</div>'+facts+'</header><div class="commission-content">'+markdown(f.body.value)+'</div>'+
       (f.updatedAt.value?'<p class="commission-updated">Updated '+escapeHtml(f.updatedAt.value)+'</p>':'')+
       '</article></main></body></html>';
   }
   function render(){
-    var open=f.commissionStatus.value==='open',badgeText=open?'신청 가능':'신청 마감',thumb=f.image.value.trim();
+    var state=statusInfo(),r=reservationSlots(),thumb=f.image.value.trim();
     document.documentElement.style.setProperty('--accent',f.accent.value);document.documentElement.style.setProperty('--soft',f.soft.value);
-    var badge=document.getElementById('previewBadge');badge.classList.toggle('open',open);badge.querySelector('span').textContent=badgeText;
+    var badge=document.getElementById('previewBadge');badge.className='preview-badge status-'+state.key;badge.querySelector('span').textContent=state.label;
+    document.getElementById('cardPreview').className='card-preview status-'+state.key;
     document.getElementById('previewCategory').textContent=f.category.value||'Commission';
     document.getElementById('previewTitle').textContent=f.title.value||'Untitled';
     document.getElementById('previewSummary').textContent=f.summary.value;
@@ -364,6 +393,9 @@
     document.getElementById('previewFormatRow').hidden=!f.format.value.trim();
     document.getElementById('previewWorkPeriod').textContent=f.workPeriod.value;
     document.getElementById('previewWorkPeriodRow').hidden=!f.workPeriod.value.trim();
+    document.getElementById('previewReservationOpen').textContent=r.open;
+    document.getElementById('previewReservationClosed').textContent=r.closed;
+    document.getElementById('previewReservations').hidden=!(r.open+r.closed);
     document.getElementById('previewPrice').textContent=f.price.value;
     document.getElementById('previewFlowers').innerHTML=flowers();
     document.getElementById('previewLetter').textContent=(f.title.value||'C').slice(0,1);
@@ -371,12 +403,14 @@
     document.getElementById('detailPreview').srcdoc=detailDocument();
   }
   function build(){
-    var s=slots(),normalizedBody=normalizeBody(f.body.value);f.slug.value=slug(f.slug.value);
+    var s=slots(),r=reservationSlots(),normalizedBody=normalizeBody(f.body.value);f.slug.value=slug(f.slug.value);
     if(f.body.value!==normalizedBody)f.body.value=normalizedBody;
     output.value=[
       '---','layout: commission','title: '+yaml(f.title.value.trim()),'category: '+yaml(f.category.value.trim()),
       'order: '+(parseInt(f.order.value,10)||0),'status: '+yaml(f.commissionStatus.value),
-      'slots_total: '+s.total,'slots_filled: '+s.filled,'price: '+yaml(f.price.value.trim()),
+      'slots_total: '+s.total,'slots_filled: '+s.filled,
+      'reservation_slots_open: '+r.open,'reservation_slots_closed: '+r.closed,
+      'price: '+yaml(f.price.value.trim()),
       'format: '+yaml(f.format.value.trim()),'work_period: '+yaml(f.workPeriod.value.trim()),
       'summary: '+yaml(f.summary.value.trim()),
       'image: '+yaml(f.image.value.trim()),

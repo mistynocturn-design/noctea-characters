@@ -3631,8 +3631,15 @@ a.sidebar-nav-item:active,
 .commission-open-badge{align-items:center;backdrop-filter:blur(6px);background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.9);border-radius:999px;color:#555057;display:inline-flex;font-size:.66rem;font-weight:800;gap:.35rem;padding:.38rem .58rem;position:absolute;right:.65rem;top:.65rem}
 .commission-open-badge i{background:#979099;border-radius:999px;display:block;height:.42rem;width:.42rem}
 .status-open .commission-open-badge{color:#35664a}
-.status-open .commission-open-badge i,.commission-article-state .commission-open-badge.is-static i{background:#4b996b}
-.status-closed .commission-thumbnail img{filter:grayscale(.24)}
+.status-open .commission-open-badge i{background:#4b996b}
+.status-reservation .commission-open-badge{color:#66528d}
+.status-reservation .commission-open-badge i{background:#8069a8}
+.status-temporary_closed .commission-open-badge{color:#8a622c}
+.status-temporary_closed .commission-open-badge i{background:#c18a3e}
+.status-closed_final .commission-open-badge{color:#342f36}
+.status-closed_final .commission-open-badge i{background:#342f36}
+.status-closed .commission-thumbnail img,.status-temporary_closed .commission-thumbnail img{filter:grayscale(.24)}
+.status-closed_final .commission-thumbnail img{filter:grayscale(.65)}
 .commission-post-copy{padding:.92rem 1rem 1rem}
 .commission-type-label{color:#8a818d;font-size:.62rem;font-weight:800;letter-spacing:.1em;margin:0 0 .25rem;text-transform:uppercase}
 .commission-post-copy h2{color:#29242c;font-family:Paperlogy,system-ui,sans-serif;font-size:1.08rem;line-height:1.35;margin:0}
@@ -3641,6 +3648,9 @@ a.sidebar-nav-item:active,
 .commission-card-details div{display:grid;font-size:.67rem;gap:.45rem;grid-template-columns:3.7rem minmax(0,1fr)}
 .commission-card-details dt{color:#928a94;font-weight:800}
 .commission-card-details dd{color:#514b53;margin:0;overflow-wrap:anywhere}
+.commission-reservation-slots{display:flex;flex-wrap:wrap;gap:.35rem .75rem;margin:.7rem 0 0}
+.commission-reservation-slots span{color:#817986;font-size:.65rem}
+.commission-reservation-slots b{color:var(--commission-accent);font-weight:800}
 .commission-card-footer{align-items:flex-end;border-top:1px solid #eee9ef;display:flex;gap:.75rem;justify-content:space-between;margin-top:.8rem;padding-top:.7rem}
 .commission-price{color:var(--commission-accent);font-size:.78rem;font-weight:800}
 .commission-flower-slots{display:inline-flex;font-family:Georgia,serif;font-size:1rem;gap:.28rem;letter-spacing:0;white-space:nowrap}
@@ -3659,6 +3669,7 @@ a.sidebar-nav-item:active,
 .commission-article-state .commission-open-badge.is-static{position:static}
 .commission-article-state .commission-flower-slots.is-large{background:var(--commission-soft);border-radius:999px;font-size:1.15rem;padding:.25rem .55rem}
 .commission-article-state small{color:#8d858f;font-size:.65rem}
+.commission-article-state .commission-reservation-slots.is-large{background:var(--commission-soft);border-radius:999px;margin:0;padding:.36rem .62rem}
 .commission-facts{background:var(--commission-soft);border-radius:10px;display:grid;gap:.35rem;margin:1rem 0 0;padding:.8rem .9rem}
 .commission-facts div{display:grid;font-size:.75rem;gap:.5rem;grid-template-columns:4.25rem 1fr}
 .commission-facts dt{color:#817986;font-weight:800}

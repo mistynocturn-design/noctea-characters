@@ -21,6 +21,9 @@ title: Commission
         {% assign commission_image = commission.image | default: commission.thumbnail | default: commission.cover_image %}
         {% assign total = commission.slots_total | default: 5 | plus: 0 %}
         {% assign filled = commission.slots_filled | default: 0 | plus: 0 %}
+        {% assign reservation_open = commission.reservation_slots_open | default: 0 | plus: 0 %}
+        {% assign reservation_closed = commission.reservation_slots_closed | default: 0 | plus: 0 %}
+        {% assign reservation_total = reservation_open | plus: reservation_closed %}
         {% if filled < 0 %}{% assign filled = 0 %}{% endif %}
         {% if filled > total %}{% assign filled = total %}{% endif %}
         <article class="commission-post-card status-{{ status }}" style="--commission-accent:{{ commission.accent | default: '#6d5c73' }};--commission-soft:{{ commission.soft | default: '#f3eef4' }};">
@@ -32,7 +35,14 @@ title: Commission
                 <span class="commission-thumbnail-placeholder">{{ commission.title | slice: 0 }}</span>
               {% endif %}
               <span class="commission-open-badge">
-                {% if status == "open" %}<i aria-hidden="true"></i> 신청 가능{% else %}<i aria-hidden="true"></i> 신청 마감{% endif %}
+                <i aria-hidden="true"></i>
+                {% case status %}
+                  {% when "open" %}신청 가능
+                  {% when "reservation" %}예약 가능
+                  {% when "temporary_closed" %}임시 마감
+                  {% when "closed_final" %}CLOSED
+                  {% else %}신청 마감
+                {% endcase %}
               </span>
             </div>
             <div class="commission-post-copy">
@@ -44,6 +54,12 @@ title: Commission
                   {% if commission.format %}<div><dt>작업 사양</dt><dd>{{ commission.format }}</dd></div>{% endif %}
                   {% if commission.work_period %}<div><dt>작업 기간</dt><dd>{{ commission.work_period }}</dd></div>{% endif %}
                 </dl>
+              {% endif %}
+              {% if reservation_total > 0 %}
+                <div class="commission-reservation-slots" aria-label="예약 가능 {{ reservation_open }}개, 예약 마감 {{ reservation_closed }}개">
+                  <span><b>예약 가능</b> {{ reservation_open }}</span>
+                  <span><b>예약 마감</b> {{ reservation_closed }}</span>
+                </div>
               {% endif %}
               <div class="commission-card-footer">
                 {% if commission.price %}<strong class="commission-price">{{ commission.price }}</strong>{% endif %}

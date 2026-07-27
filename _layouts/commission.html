@@ -6,6 +6,9 @@ layout: default
 {% assign commission_image = page.image | default: page.cover_image | default: page.thumbnail %}
 {% assign total = page.slots_total | default: 5 | plus: 0 %}
 {% assign filled = page.slots_filled | default: 0 | plus: 0 %}
+{% assign reservation_open = page.reservation_slots_open | default: 0 | plus: 0 %}
+{% assign reservation_closed = page.reservation_slots_closed | default: 0 | plus: 0 %}
+{% assign reservation_total = reservation_open | plus: reservation_closed %}
 {% if filled < 0 %}{% assign filled = 0 %}{% endif %}
 {% if filled > total %}{% assign filled = total %}{% endif %}
 
@@ -23,13 +26,26 @@ layout: default
 
     <div class="commission-article-state">
       <span class="commission-open-badge is-static">
-        {% if status == "open" %}<i aria-hidden="true"></i> 신청 가능{% else %}<i aria-hidden="true"></i> 신청 마감{% endif %}
+        <i aria-hidden="true"></i>
+        {% case status %}
+          {% when "open" %}신청 가능
+          {% when "reservation" %}예약 가능
+          {% when "temporary_closed" %}임시 마감
+          {% when "closed_final" %}CLOSED
+          {% else %}신청 마감
+        {% endcase %}
       </span>
       {% if total > 0 %}
         <span class="commission-flower-slots is-large" aria-label="총 {{ total }}개 중 {{ filled }}개 접수">
           {% for slot in (1..total) %}{% if slot <= filled %}<b aria-hidden="true">✿</b>{% else %}<i aria-hidden="true">❀</i>{% endif %}{% endfor %}
         </span>
         <small>✿ 접수 · ❀ 빈 슬롯</small>
+      {% endif %}
+      {% if reservation_total > 0 %}
+        <span class="commission-reservation-slots is-large" aria-label="예약 가능 {{ reservation_open }}개, 예약 마감 {{ reservation_closed }}개">
+          <span><b>예약 가능</b> {{ reservation_open }}</span>
+          <span><b>예약 마감</b> {{ reservation_closed }}</span>
+        </span>
       {% endif %}
     </div>
 
