@@ -29,3 +29,8 @@ collections:
   character_aus:
     output: true
     permalink: /character-au/:name/
+  twitter:
+    output: true
+    permalink: /twitter/:name/
+  commissions:
+    output: false

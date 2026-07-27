@@ -1,0 +1,80 @@
+---
+layout: default
+---
+
+<article class="twitter-month-page" style="--twitter-font-size: {{ page.twitter_font_size | default: '0.82rem' }};">
+  <a class="detail-back-link" href="{{ site.baseurl }}/twitter/">← Twitter</a>
+  <header class="twitter-month-header">
+    <p class="twitter-kicker">Twitter Archive</p>
+    <h1>{{ page.title }}</h1>
+
+    {% if page.tags %}
+      <div class="twitter-tags">
+        {% for tag in page.tags %}
+          <span>#{{ tag }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </header>
+
+  <div class="twitter-note-body">
+    {{ content }}
+  </div>
+</article>
+
+<div class="twitter-image-modal" hidden aria-hidden="true">
+  <button class="twitter-image-modal-close" type="button" aria-label="Close image">&times;</button>
+  <img src="" alt="">
+</div>
+
+<script>
+(function () {
+  function repoImagePath(value) {
+    var path = String(value || '').trim().replace(/[\\₩]+/g, '/');
+    if (!path || /^(?:https?:)?\/\//i.test(path) || /^(?:data|blob):/i.test(path)) return path;
+    var marker = path.toLowerCase().indexOf('/assets/');
+    if (marker >= 0) path = path.slice(marker + 1);
+    else if (path.toLowerCase().indexOf('assets/') !== 0) return path;
+    return '{{ site.baseurl }}/' + path.replace(/^\/+/, '').replace(/\/{2,}/g, '/');
+  }
+
+  document.querySelectorAll('.twitter-note-body img').forEach(function (image) {
+    image.src = repoImagePath(image.getAttribute('src'));
+  });
+  document.querySelectorAll('[data-twitter-image]').forEach(function (button) {
+    button.setAttribute('data-twitter-image', repoImagePath(button.getAttribute('data-twitter-image')));
+  });
+
+  var modal = document.querySelector('.twitter-image-modal');
+  if (!modal) return;
+  var modalImage = modal.querySelector('img');
+  var closeButton = modal.querySelector('.twitter-image-modal-close');
+
+  function openImage(src) {
+    modalImage.src = src;
+    modal.hidden = false;
+    modal.setAttribute('aria-hidden', 'false');
+    document.documentElement.classList.add('twitter-modal-open');
+  }
+
+  function closeImage() {
+    modal.hidden = true;
+    modal.setAttribute('aria-hidden', 'true');
+    modalImage.src = '';
+    document.documentElement.classList.remove('twitter-modal-open');
+  }
+
+  document.addEventListener('click', function (event) {
+    var trigger = event.target.closest('[data-twitter-image]');
+    if (trigger) {
+      openImage(trigger.getAttribute('data-twitter-image'));
+      return;
+    }
+    if (event.target === modal || event.target === closeButton) closeImage();
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && !modal.hidden) closeImage();
+  });
+})();
+</script>

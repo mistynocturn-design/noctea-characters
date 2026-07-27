@@ -1,0 +1,145 @@
+---
+layout: default
+title: Twitter
+---
+
+<section class="page archive-section-page">
+<header class="archive-section-header">
+  <div><p class="archive-section-kicker">SOCIAL ARCHIVE</p><h1>Twitter</h1></div>
+  <a class="twitter-tool-button" href="{{ site.baseurl }}/tools/twitter-converter.html" target="_blank" rel="noopener" aria-label="Open Twitter converter" title="Open Twitter converter">+</a>
+</header>
+
+<details class="twitter-search-panel archive-inline-search"><summary>Search</summary>
+  <div class="archive-search-grid">
+    <label>Keyword<input id="twitterSearchKeyword" type="search" placeholder="Search text"></label>
+    <label>Author<input id="twitterSearchAuthor" type="search" placeholder="Author"></label>
+    <label>From<input id="twitterSearchFrom" type="date"></label>
+    <label>To<input id="twitterSearchTo" type="date"></label>
+  </div>
+  <div class="archive-search-actions">
+    <button id="twitterSearchButton" type="button">Search</button>
+    <button id="twitterSearchReset" type="button">Reset</button>
+  </div>
+  <div class="archive-search-summary" id="twitterSearchSummary"></div>
+  <div class="archive-search-results" id="twitterSearchResults" hidden></div>
+</details>
+<div class="twitter-index">
+  {% assign months = site.twitter | sort: "date" | reverse %}
+  {% if months.size > 0 %}
+    {% for month in months %}
+      <article class="twitter-month-card" style="--twitter-index-accent: {{ month.twitter_accent | default: '#4e4a65' }}; --twitter-index-accent-text: {{ month.twitter_accent_text | default: '#e7e3d8' }}; --twitter-index-text: {{ month.twitter_index_text | default: '#161732' }}; --twitter-index-hover: {{ month.twitter_index_hover | default: '#ebeaef' }};">
+        <a class="twitter-month-link" href="{{ month.url | relative_url }}">
+          <div class="twitter-month-profile">
+            <div class="twitter-month-avatar twitter-author-placeholder">{{ month.date | date: "%m" }}</div>
+            <div>
+              <h2>{{ month.title }}</h2>
+            </div>
+          </div>
+          {% if month.tags %}
+            <div class="twitter-tags twitter-index-tags">
+              {% for tag in month.tags %}
+                <span>#{{ tag }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </a>
+      </article>
+    {% endfor %}
+  {% else %}
+    <div class="commission-empty">
+      <p>등록된 Twitter 월별 아카이브가 없습니다.</p>
+      <a href="{{ site.baseurl }}/tools/twitter-converter.html" target="_blank" rel="noopener">컨버터에서 첫 월 만들기</a>
+    </div>
+  {% endif %}
+</div>
+
+<script type="application/json" id="twitterSearchData">
+[
+{% assign twitter_items = site.twitter | sort: "date" | reverse %}
+{% for month in twitter_items %}
+  {
+    "title": {{ month.title | jsonify }},
+    "date": {{ month.date | date: "%Y-%m-%d" | jsonify }},
+    "url": {{ month.url | relative_url | jsonify }},
+    "content": {{ month.content | jsonify }}
+  }{% unless forloop.last %},{% endunless %}
+{% endfor %}
+]
+</script>
+<script>
+(function () {
+  var dataElement = document.getElementById('twitterSearchData');
+  var keywordInput = document.getElementById('twitterSearchKeyword');
+  var authorInput = document.getElementById('twitterSearchAuthor');
+  var fromInput = document.getElementById('twitterSearchFrom');
+  var toInput = document.getElementById('twitterSearchTo');
+  var searchButton = document.getElementById('twitterSearchButton');
+  var resetButton = document.getElementById('twitterSearchReset');
+  var summary = document.getElementById('twitterSearchSummary');
+  var resultsBox = document.getElementById('twitterSearchResults');
+  if (!dataElement || !keywordInput || !resultsBox) return;
+
+  function textOf(node) { return (node ? node.textContent : '').replace(/\s+/g, ' ').trim(); }
+  function noteInfo(note) {
+    return {
+      author: note.getAttribute('data-author') || textOf(note.querySelector('.twitter-note-author')),
+      date: note.getAttribute('data-date') || textOf(note.querySelector('.twitter-note-date')),
+      tags: note.getAttribute('data-tags') || textOf(note.querySelector('.twitter-note-tags')),
+      text: textOf(note.querySelector('.twitter-note-text'))
+    };
+  }
+  function parseItems() {
+    var source = JSON.parse(dataElement.textContent || '[]');
+    var items = [];
+    source.forEach(function (month) {
+      var wrapper = document.createElement('div');
+      wrapper.innerHTML = month.content || '';
+      Array.prototype.slice.call(wrapper.children).forEach(function (node) {
+        if (node.classList && node.classList.contains('twitter-thread')) {
+          var notes = Array.prototype.slice.call(node.querySelectorAll('.twitter-note')).map(noteInfo);
+          if (!notes.length) return;
+          items.push({ type: 'thread', month: month.title || '', url: month.url || '', date: notes[0].date, author: notes.map(function (n) { return n.author; }).join(' '), text: notes.map(function (n) { return n.text + ' ' + n.tags; }).join(' '), count: notes.length });
+          return;
+        }
+        if (node.classList && node.classList.contains('twitter-note')) {
+          var info = noteInfo(node);
+          items.push({ type: 'tweet', month: month.title || '', url: month.url || '', date: info.date, author: info.author, text: info.text + ' ' + info.tags, count: 1 });
+        }
+      });
+    });
+    return items;
+  }
+  var items = parseItems();
+  function inDateRange(date, from, to) { if (from && (!date || date < from)) return false; if (to && (!date || date > to)) return false; return true; }
+  function excerpt(text, keyword) { var clean = text || ''; var lower = clean.toLowerCase(); var needle = (keyword || '').toLowerCase(); var index = needle ? lower.indexOf(needle) : 0; var start = Math.max(0, index - 45); return (start > 0 ? '...' : '') + clean.slice(start, start + 150) + (clean.length > start + 150 ? '...' : ''); }
+  function render(matches, keyword) {
+    resultsBox.innerHTML = '';
+    resultsBox.hidden = matches.length === 0;
+    summary.textContent = matches.length ? matches.length + ' results' : 'No results';
+    matches.slice(0, 80).forEach(function (item) {
+      var link = document.createElement('a');
+      link.className = 'archive-search-result';
+      link.href = item.url;
+      link.innerHTML = '<span class="search-result-label">' + item.month + ' · ' + item.type + (item.type === 'thread' ? ' · ' + item.count + ' posts' : '') + '</span><strong>' + item.date + '</strong><p></p>';
+      link.querySelector('p').textContent = excerpt(item.text, keyword);
+      resultsBox.appendChild(link);
+    });
+  }
+  function runSearch() {
+    var keyword = keywordInput.value.trim().toLowerCase();
+    var author = authorInput.value.trim().toLowerCase();
+    var from = fromInput.value;
+    var to = toInput.value;
+    var matches = items.filter(function (item) {
+      if (keyword && item.text.toLowerCase().indexOf(keyword) === -1) return false;
+      if (author && item.author.toLowerCase().indexOf(author) === -1) return false;
+      return inDateRange(item.date, from, to);
+    });
+    render(matches, keyword);
+  }
+  searchButton.addEventListener('click', runSearch);
+  [keywordInput, authorInput, fromInput, toInput].forEach(function (input) { input.addEventListener('keydown', function (event) { if (event.key === 'Enter') runSearch(); }); });
+  resetButton.addEventListener('click', function () { keywordInput.value = ''; authorInput.value = ''; fromInput.value = ''; toInput.value = ''; summary.textContent = ''; resultsBox.innerHTML = ''; resultsBox.hidden = true; });
+})();
+</script>
+</section>

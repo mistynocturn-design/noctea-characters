@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Noctea Twitter Archive Converter</title>
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; background: #f6f7f9; color: #222; }
+    main { max-width: 1100px; margin: 0 auto; padding: 28px 18px 48px; }
+    h1 { font-size: 24px; margin: 0 0 18px; }
+    label { display: block; font-size: 13px; font-weight: 700; margin: 14px 0 6px; }
+    input, textarea { box-sizing: border-box; width: 100%; border: 1px solid #ccd1d8; border-radius: 8px; padding: 10px 12px; font: inherit; background: #fff; }
+    textarea { min-height: 190px; resize: vertical; white-space: pre; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .panel { background: #fff; border: 1px solid #e3e6ea; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0; }
+    button { border: 0; border-radius: 8px; padding: 10px 14px; font-weight: 700; cursor: pointer; background: #4e4a65; color: #e7e3d8; }
+    button.secondary { background: #596273; color: #fff; }
+    .hint { color: #646b76; font-size: 13px; line-height: 1.55; margin: 8px 0 0; }
+    .status { font-size: 13px; color: #4e4a65; min-height: 20px; }
+    .guide { margin: 0 0 16px; color: #6f6a76; font-size: 13px; }
+    .guide summary { cursor: pointer; font-weight: 700; }
+    .guide ol { line-height: 1.7; margin-bottom: 0; }
+    @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Noctea Twitter Archive Converter</h1>
+
+  <details class="guide">
+    <summary>사용방법</summary>
+    <ol>
+      <li><strong>최초 1회:</strong> 새 Google 스프레드시트에 <code>Twitter</code> 시트를 만들고 첫 행에 <code>date, author, profile_image, tags, content, image_urls, thread_id, thread_start_month</code>를 입력합니다.</li>
+      <li>스프레드시트의 확장 프로그램 → Apps Script에서 repo의 <code>appscript/twitter_archive_Code.gs</code> 내용을 붙여넣습니다.</li>
+      <li>Apps Script의 스크립트 속성에 <code>BACKUP_READ_KEY</code>를 만들고 원하는 비밀 문자를 저장한 뒤, 웹 앱을 '나로 실행 / 모든 사용자'로 배포합니다.</li>
+      <li>배포된 <code>/exec</code> URL과 방금 정한 Read key를 아래에 입력합니다. 이 값은 현재 브라우저에만 저장됩니다.</li>
+      <li><code>Twitter</code> 시트에 트윗을 한 행씩 정리합니다. 이미지가 여러 장이면 <code>image_urls</code> 셀 안에 줄바꿈으로 최대 4개까지 입력합니다.</li>
+      <li>원트윗 기준 월을 선택하고 Load month를 누릅니다. 다음 달까지 이어진 타래도 시작월 파일에 함께 포함됩니다.</li>
+      <li>타래ID는 월마다 1부터 다시 써도 됩니다. 같은 타래의 행은 스프레드시트에서 서로 붙여 둡니다. 여러 달에 걸친 타래는 선택 사항인 <code>타래시작월</code> 열을 추가하면 가장 정확합니다.</li>
+      <li>작성자 색상과 미리 생성된 결과를 확인한 뒤 <code>_twitter/YYYY-MM.md</code>로 저장합니다.</li>
+      <li>프로필·첨부 이미지는 repo에 올린 뒤 시트에 해당 경로를 기록합니다.</li>
+    </ol>
+  </details>
+
+  <section class="panel">
+    <h2>Load from spreadsheet</h2>
+    <div class="grid">
+      <div><label for="sourceUrl">Apps Script URL</label><input id="sourceUrl" placeholder="https://script.google.com/macros/s/.../exec"></div>
+      <div><label for="readKey">Read key</label><input id="readKey" type="password"></div>
+      <div><label for="sourceMonth">Original thread month</label><input id="sourceMonth" type="month"></div>
+    </div>
+    <div class="actions"><button id="loadMonthBtn" type="button">Load month</button></div>
+    <div class="status" id="sourceStatus"></div>
+  </section>
+
+  <section class="panel">
+    <div class="grid">
+      <div><label for="title">Month title</label><input id="title"></div>
+      <div><label for="date">Archive sort date</label><input id="date" placeholder="YYYY-MM-01"></div>
+      <div><label for="fontSize">Note font size</label><input id="fontSize" value="0.70rem"></div>
+    </div>
+    <label for="authorStyles">Author styles</label>
+    <textarea id="authorStyles" style="min-height:80px;">Noctea|#f3eef4|#302b32</textarea>
+    <p class="hint">One author per line: author|box background|text color. Names must match the spreadsheet author column.</p>
+  </section>
+
+  <section class="panel">
+    <label for="input">Loaded rows / manual paste fallback</label>
+    <textarea id="input" placeholder="Copy columns A:H from Google Sheets, then paste here."></textarea>
+    <p class="hint">Expected columns: date, author, profile image, tags, content, image URLs, thread ID, thread start month. Put 1 to 4 image URLs in the image cell, one URL per line.</p>
+    <div class="actions">
+      <button id="convertBtn" type="button">Convert</button>
+      <button class="secondary" id="copyBtn" type="button">Copy output</button>
+      <button class="secondary" id="downloadBtn" type="button">Download .md</button>
+    </div>
+    <div class="status" id="status"></div>
+  </section>
+
+  <section class="panel">
+    <label for="output">Output for _twitter/YYYY-MM.md</label>
+    <textarea id="output" spellcheck="false"></textarea>
+  </section>
+</main>
+
+<script>
+var BACKUP_API_VERSION = '2026-07-27.1';
+var BACKUP_SOURCE_STORAGE = 'noctea-twitter-sheet-source';
+function loadSourceSettings() {
+  try {
+    var saved = JSON.parse(localStorage.getItem(BACKUP_SOURCE_STORAGE) || '{}');
+    ['sourceUrl', 'readKey', 'sourceMonth'].forEach(function (id) { if (saved[id] != null) document.getElementById(id).value = saved[id]; });
+  } catch (error) {}
+}
+function saveSourceSettings() {
+  localStorage.setItem(BACKUP_SOURCE_STORAGE, JSON.stringify({ sourceUrl: document.getElementById('sourceUrl').value.trim(), readKey: document.getElementById('readKey').value, sourceMonth: document.getElementById('sourceMonth').value }));
+}
+function tsvCell(value) {
+  var text = String(value == null ? '' : value);
+  return /["\t\r\n]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
+}
+async function loadTwitterMonth() {
+  var sourceStatus = document.getElementById('sourceStatus');
+  var url = document.getElementById('sourceUrl').value.trim();
+  var month = document.getElementById('sourceMonth').value;
+  if (!url || !month) { sourceStatus.textContent = 'Apps Script URL과 월을 입력해주세요.'; return; }
+  saveSourceSettings(); sourceStatus.textContent = 'Loading...';
+  try {
+    var response = await fetch(url, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'read_twitter', read_key: document.getElementById('readKey').value, month: month }) });
+    var data = await response.json();
+    if (!data.ok && !data.api_version) throw new Error('Apps Script가 이전 배포본입니다. repo의 twitter_archive_Code.gs를 붙여넣고 새 버전으로 다시 배포해주세요.');
+    if (!data.ok) throw new Error(data.error || 'Load failed.');
+    if (data.api_version !== BACKUP_API_VERSION) throw new Error('Apps Script 최신 버전을 배포해주세요.');
+    document.getElementById('input').value = data.rows.map(function (row) { return [row.date, row.author, row.profile_image, row.tags, row.content, row.image_urls, row.thread_id, row.thread_start_month].map(tsvCell).join('\t'); }).join('\n');
+    document.getElementById('title').value = month;
+    document.getElementById('date').value = month + '-01';
+    buildOutput();
+    sourceStatus.textContent = month + ' · ' + data.rows.length + '개 트윗을 불러왔습니다.';
+  } catch (error) { sourceStatus.textContent = error.message; }
+}
+
+function parseTsv(text) {
+  var rows = [];
+  var row = [];
+  var cell = '';
+  var quoted = false;
+
+  for (var i = 0; i < text.length; i++) {
+    var ch = text[i];
+    var next = text[i + 1];
+    if (quoted) {
+      if (ch === '"' && next === '"') { cell += '"'; i++; }
+      else if (ch === '"') quoted = false;
+      else cell += ch;
+      continue;
+    }
+    if (ch === '"' && cell === '') quoted = true;
+    else if (ch === '\t') { row.push(cell); cell = ''; }
+    else if (ch === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; }
+    else if (ch !== '\r') cell += ch;
+  }
+  if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+  return rows.filter(function (r) { return r.some(function (c) { return String(c).trim() !== ''; }); });
+}
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+function escapeAttr(value) { return escapeHtml(value).replace(/'/g, '&#39;'); }
+function cleanText(value) { return String(value || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim(); }
+function yamlQuote(value) { return '"' + String(value || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'; }
+
+function normalizeDate(value) {
+  var text = String(value || '').trim();
+  if (!text) return '';
+  var date = new Date(text);
+  if (!isNaN(date.getTime()) && /^\d{4}[-/.]\d{1,2}[-/.]\d{1,2}/.test(text)) return date.toISOString().slice(0, 10);
+  return text.replace(/\./g, '-');
+}
+
+function monthFromDate(value) {
+  var date = normalizeDate(value);
+  return date ? date.slice(0, 7) : '';
+}
+
+function splitTags(value) {
+  return String(value || '')
+    .split(/[,;\n]+/)
+    .map(function (tag) { return tag.trim().replace(/^#/, ''); })
+    .filter(Boolean);
+}
+
+function splitImages(value) {
+  return String(value || '')
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    .split(/[\n,;]+/)
+    .map(function (url) { return repoImagePath(url); })
+    .filter(Boolean)
+    .slice(0, 4);
+}
+
+function repoImagePath(value) {
+  var path = String(value || '').trim().replace(/^['"]|['"]$/g, '').replace(/[\\₩]+/g, '/');
+  if (!path || /^(?:https?:)?\/\//i.test(path) || /^(?:data|blob):/i.test(path)) return path;
+  var marker = path.toLowerCase().indexOf('/assets/');
+  if (marker >= 0) path = path.slice(marker + 1);
+  else if (path.toLowerCase().indexOf('assets/') !== 0) return path;
+  return '/noctea-characters/' + path.replace(/^\/+/, '').replace(/\/{2,}/g, '/');
+}
+
+function parseAuthorStyles() {
+  var map = {};
+  document.getElementById('authorStyles').value.split(/\r?\n/).forEach(function (line) {
+    var parts = line.split('|').map(function (part) { return part.trim(); });
+    if (parts.length >= 3 && parts[0]) map[parts[0]] = { bg: parts[1], text: parts[2] };
+  });
+  return map;
+}
+
+function indexColorsForAuthor(author) {
+  if (author === '\uBE44\uB2C8') return { accent: '#4e4a65', accentText: '#e7e3d8', indexText: '#161732', hover: '#ebeaef' };
+  if (author === '\uB179\uD2F0') return { accent: '#e7e3d8', accentText: '#4e4a65', indexText: '#4f362a', hover: '#f9f5f2' };
+  return { accent: '#4e4a65', accentText: '#e7e3d8', indexText: '#161732', hover: '#ebeaef' };
+}
+
+function dominantAuthorForRows(items, threadMeta, currentMonth) {
+  var counts = {};
+  var order = [];
+  items.forEach(function (item) {
+    if (item.threadId) {
+      var meta = threadMeta[item.threadId];
+      if (currentMonth && (!meta || meta.ownerMonth !== currentMonth)) return;
+    } else if (currentMonth && item.writtenMonth !== currentMonth) return;
+
+    var author = String(item.row[1] || '').trim();
+    if (!author) return;
+    if (!counts[author]) {
+      counts[author] = 0;
+      order.push(author);
+    }
+    counts[author] += 1;
+  });
+
+  return order.sort(function (a, b) {
+    if (counts[a] !== counts[b]) return counts[b] - counts[a];
+    return order.indexOf(a) - order.indexOf(b);
+  })[0] || '';
+}
+
+function imageGridHtml(images) {
+  if (!images.length) return '';
+  var html = [];
+  html.push('  <div class="twitter-image-grid twitter-image-count-' + images.length + '">');
+  images.forEach(function (url, index) {
+    html.push('    <button class="twitter-image-button" type="button" data-twitter-image="' + escapeAttr(url) + '" aria-label="Open image ' + (index + 1) + '">');
+    html.push('      <img src="' + escapeAttr(url) + '" alt="" loading="lazy">');
+    html.push('    </button>');
+  });
+  html.push('  </div>');
+  return html.join('\n');
+}
+
+function noteHtml(row, styles) {
+  var date = normalizeDate(row[0]);
+  var author = String(row[1] || '').trim();
+  var avatar = repoImagePath(row[2]);
+  var tags = splitTags(row[3]);
+  var text = cleanText(row[4]);
+  var images = splitImages(row.length >= 7 ? row[5] : '');
+  if (!date && !author && !text && !images.length) return '';
+
+  var style = styles[author] || {};
+  var styleAttr = '';
+  if (style.bg || style.text) {
+    styleAttr = ' style="' + (style.bg ? '--twitter-note-bg:' + escapeAttr(style.bg) + ';' : '') + (style.text ? '--twitter-note-text:' + escapeAttr(style.text) + ';' : '') + '"';
+  }
+
+  var html = [];
+  html.push('<section class="twitter-note" data-date="' + escapeAttr(date) + '" data-author="' + escapeAttr(author) + '" data-tags="' + escapeAttr(tags.join(' ')) + '"' + styleAttr + '>');
+  html.push('  <div class="twitter-note-header">');
+  if (avatar) html.push('    <img class="twitter-note-avatar" src="' + escapeAttr(avatar) + '" alt="">');
+  else html.push('    <div class="twitter-note-avatar twitter-author-placeholder">' + escapeHtml(author ? author.charAt(0) : 'A') + '</div>');
+  html.push('    <div>');
+  html.push('      <p class="twitter-note-author">' + escapeHtml(author || 'Unknown') + '</p>');
+  html.push('      <p class="twitter-note-date">' + escapeHtml(date) + '</p>');
+  html.push('    </div>');
+  html.push('  </div>');
+  if (tags.length) html.push('  <p class="twitter-note-tags">' + tags.map(function (tag) { return '#' + escapeHtml(tag); }).join(' ') + '</p>');
+  if (text) html.push('  <div class="twitter-note-text">' + escapeHtml(text).replace(/\n/g, '<br>') + '</div>');
+  if (images.length) html.push(imageGridHtml(images));
+  html.push('</section>');
+  return html.join('\n');
+}
+
+function threadLabel(threadId, startMonth, currentMonth) {
+  if (!threadId) return '';
+  if (startMonth && currentMonth && startMonth !== currentMonth) {
+    return '<div class="twitter-thread-label">Continued from ' + escapeHtml(startMonth) + ' &middot; ' + escapeHtml(threadId) + '</div>';
+  }
+  return '<div class="twitter-thread-label">Thread &middot; ' + escapeHtml(threadId) + '</div>';
+}
+
+function buildOutput() {
+  var rows = parseTsv(document.getElementById('input').value);
+  if (rows.length && !/^\d{4}/.test(String(rows[0][0] || '').trim())) rows.shift();
+
+  var currentMonth = monthFromDate(document.getElementById('date').value);
+  var indexed = rows.map(function (row, index) {
+    var threadId = String((row.length >= 7 ? row[6] : row[5]) || '').trim();
+    return {
+      row: row,
+      index: index,
+      date: normalizeDate(row[0]),
+      threadId: threadId,
+      threadStartMonth: monthFromDate(row[7]),
+      writtenMonth: monthFromDate(row[0])
+    };
+  });
+
+  var threadMeta = {};
+  indexed.forEach(function (item) {
+    if (!item.threadId) return;
+    if (!threadMeta[item.threadId]) {
+      threadMeta[item.threadId] = {
+        originDate: item.date,
+        originIndex: item.index,
+        ownerMonth: item.threadStartMonth || monthFromDate(item.date)
+      };
+      return;
+    }
+    var meta = threadMeta[item.threadId];
+    if (item.threadStartMonth) meta.ownerMonth = item.threadStartMonth;
+    if (item.date < meta.originDate || (item.date === meta.originDate && item.index < meta.originIndex)) {
+      meta.originDate = item.date;
+      meta.originIndex = item.index;
+      if (!meta.ownerMonth) meta.ownerMonth = item.threadStartMonth || monthFromDate(item.date);
+    }
+  });
+
+  var allTags = [];
+  var styles = parseAuthorStyles();
+  var blockItems = [];
+  var dominantAuthor = '';
+  var indexColors = indexColorsForAuthor('');
+  var usedThreadIds = {};
+
+  indexed.forEach(function (item) {
+    splitTags(item.row[3]).forEach(function (tag) { if (allTags.indexOf(tag) === -1) allTags.push(tag); });
+  });
+
+  indexed.forEach(function (item) {
+    if (!item.threadId) {
+      if (currentMonth && item.writtenMonth !== currentMonth) return;
+      blockItems.push({
+        date: item.date,
+        index: item.index,
+        html: noteHtml(item.row, styles)
+      });
+      return;
+    }
+
+    if (usedThreadIds[item.threadId]) return;
+    usedThreadIds[item.threadId] = true;
+
+    var meta = threadMeta[item.threadId];
+    if (currentMonth && meta.ownerMonth !== currentMonth) return;
+
+    var threadItems = indexed
+      .filter(function (other) { return other.threadId === item.threadId; })
+      .sort(function (a, b) {
+        if (a.date < b.date) return -1;
+        if (a.date > b.date) return 1;
+        return a.index - b.index;
+      });
+    var threadNotes = threadItems.map(function (threadItem) { return noteHtml(threadItem.row, styles); }).filter(Boolean);
+    if (!threadNotes.length) return;
+
+    var originAuthor = String(threadItems[0].row[1] || '').trim();
+    var originStyle = styles[originAuthor] || {};
+    var threadStyleAttr = '';
+    if (originStyle.bg || originStyle.text) {
+      threadStyleAttr = ' style="' +
+        (originStyle.bg ? '--twitter-thread-bg:' + escapeAttr(originStyle.bg) + ';' : '') +
+        (originStyle.text ? '--twitter-thread-color:' + escapeAttr(originStyle.text) + ';' : '') +
+        '"';
+    }
+
+    blockItems.push({
+      date: meta.originDate,
+      index: meta.originIndex,
+      html: '<section class="twitter-thread" data-thread-id="' + escapeAttr(item.threadId) + '"' + threadStyleAttr + '>\n' + threadLabel(item.threadId, meta.ownerMonth, currentMonth) + '\n' + threadNotes.join('\n\n') + '\n</section>'
+    });
+  });
+
+  blockItems.sort(function (a, b) {
+    if (a.date < b.date) return 1;
+    if (a.date > b.date) return -1;
+    return b.index - a.index;
+  });
+
+  dominantAuthor = dominantAuthorForRows(indexed, threadMeta, currentMonth);
+  indexColors = indexColorsForAuthor(dominantAuthor);
+
+  var blocks = blockItems.map(function (item) { return item.html; }).filter(Boolean);
+  var frontMatter = [
+    '---',
+    'layout: twitter_month',
+    'title: ' + yamlQuote(document.getElementById('title').value),
+    'date: ' + document.getElementById('date').value,
+    'twitter_font_size: ' + yamlQuote(document.getElementById('fontSize').value),
+    'twitter_dominant_author: ' + yamlQuote(dominantAuthor),
+    'twitter_accent: ' + yamlQuote(indexColors.accent),
+    'twitter_accent_text: ' + yamlQuote(indexColors.accentText),
+    'twitter_index_text: ' + yamlQuote(indexColors.indexText),
+    'twitter_index_hover: ' + yamlQuote(indexColors.hover),
+    'tags:'
+  ];
+  if (allTags.length) allTags.forEach(function (tag) { frontMatter.push('  - ' + yamlQuote(tag)); });
+  else frontMatter.push('  - memo');
+  frontMatter.push('---', '');
+
+  document.getElementById('output').value = frontMatter.concat(blocks).join('\n\n').trim() + '\n';
+  document.getElementById('status').textContent = blocks.length + ' blocks converted.';
+}
+
+
+var STORAGE_KEY = 'noctea-twitter-converter-settings';
+var REMEMBERED_FIELDS = ['title', 'date', 'fontSize', 'authorStyles'];
+
+function loadRememberedFields() {
+  try {
+    var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    REMEMBERED_FIELDS.forEach(function (id) {
+      var element = document.getElementById(id);
+      if (element && Object.prototype.hasOwnProperty.call(saved, id)) element.value = saved[id];
+    });
+  } catch (error) {}
+}
+
+function saveRememberedFields() {
+  var saved = {};
+  REMEMBERED_FIELDS.forEach(function (id) {
+    var element = document.getElementById(id);
+    if (element) saved[id] = element.value;
+  });
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(saved)); } catch (error) {}
+}
+
+loadRememberedFields();
+loadSourceSettings();
+var currentMonth = new Date().toISOString().slice(0, 7);
+if (!document.getElementById('sourceMonth').value) document.getElementById('sourceMonth').value = currentMonth;
+if (!document.getElementById('title').value) document.getElementById('title').value = currentMonth;
+if (!document.getElementById('date').value) document.getElementById('date').value = currentMonth + '-01';
+document.getElementById('loadMonthBtn').addEventListener('click', loadTwitterMonth);
+var authorStylesElement = document.getElementById('authorStyles');
+if (authorStylesElement && authorStylesElement.value.indexOf('#ceccd9') !== -1) {
+  authorStylesElement.value = authorStylesElement.value.replace(/#ceccd9/g, '#e6eaf3');
+  saveRememberedFields();
+}
+REMEMBERED_FIELDS.forEach(function (id) {
+  var element = document.getElementById(id);
+  if (element) element.addEventListener('input', saveRememberedFields);
+});
+document.getElementById('convertBtn').addEventListener('click', function () {
+  saveRememberedFields();
+  buildOutput();
+});
+document.getElementById('copyBtn').addEventListener('click', function () {
+  var output = document.getElementById('output');
+  output.focus();
+  output.select();
+  document.execCommand('copy');
+  document.getElementById('status').textContent = 'Copied output.';
+});
+document.getElementById('downloadBtn').addEventListener('click', function () {
+  buildOutput();
+  var title = document.getElementById('title').value.trim() || currentMonth;
+  var blob = new Blob([document.getElementById('output').value], { type: 'text/markdown;charset=utf-8' });
+  var link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = title.replace(/[^0-9A-Za-z가-힣_-]/g, '-') + '.md';
+  link.click();
+  URL.revokeObjectURL(link.href);
+  document.getElementById('status').textContent = 'Downloaded ' + link.download + '.';
+});
+</script>
+</body>
+</html>

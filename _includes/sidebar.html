@@ -1,4 +1,6 @@
 {% assign current_path = page.url | default: '/' %}
+{% assign current_path_parts = current_path | split: '/' %}
+{% assign current_section = current_path_parts[1] %}
 <div class="sidebar">
   <div class="container sidebar-sticky">
     <div class="sidebar-about">
@@ -11,7 +13,9 @@
     </div>
 
     <nav class="sidebar-nav">
-      <a class="sidebar-nav-item{% if current_path contains '/characters/' or current_path contains '/character-au/' %} active{% endif %}" href="{{ site.baseurl }}/characters/">Characters</a>
+      <a class="sidebar-nav-item{% if current_section == 'characters' or current_section == 'character-au' %} active{% endif %}" href="{{ site.baseurl }}/characters/">Characters</a>
+      <a class="sidebar-nav-item{% if current_section == 'twitter' %} active{% endif %}" href="{{ site.baseurl }}/twitter/">Twitter</a>
+      <a class="sidebar-nav-item{% if current_section == 'commission' %} active{% endif %}" href="{{ site.baseurl }}/commission/">Commission</a>
     </nav>
   </div>
 </div>

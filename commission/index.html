@@ -1,0 +1,83 @@
+---
+layout: default
+title: Commission
+---
+
+<section class="commission-page">
+  <header class="commission-header">
+    <div>
+      <p class="commission-kicker">COMMISSION BOARD</p>
+      <h1>Commission</h1>
+      <p class="commission-intro">타입별 안내와 현재 신청 가능한 슬롯을 확인할 수 있습니다.</p>
+    </div>
+    <a class="commission-tool-button" href="{{ site.baseurl }}/tools/commission-editor.html" target="_blank" rel="noopener" aria-label="Open commission editor" title="Open commission editor">+</a>
+  </header>
+
+  {% assign commission_types = site.commissions | sort: "order" %}
+  {% if commission_types.size > 0 %}
+    <div class="commission-grid">
+      {% for commission in commission_types %}
+        {% assign status = commission.status | default: "preparing" %}
+        {% assign total = commission.slots_total | default: 0 | plus: 0 %}
+        {% assign remaining = commission.slots_remaining | default: 0 | plus: 0 %}
+        {% if remaining < 0 %}{% assign remaining = 0 %}{% endif %}
+        {% if total > 0 and remaining > total %}{% assign remaining = total %}{% endif %}
+        {% if total > 0 %}
+          {% assign filled = total | minus: remaining %}
+          {% assign filled_percent = filled | times: 100 | divided_by: total %}
+        {% else %}
+          {% assign filled_percent = 0 %}
+        {% endif %}
+        <article class="commission-card status-{{ status }}" style="--commission-accent: {{ commission.accent | default: '#6d5c73' }}; --commission-soft: {{ commission.soft | default: '#f3eef4' }};">
+          <div class="commission-card-top">
+            <div>
+              <p class="commission-type-label">{{ commission.category | default: "Commission type" }}</p>
+              <h2>{{ commission.title }}</h2>
+            </div>
+            <span class="commission-status">
+              {% case status %}
+                {% when "open" %}Open
+                {% when "closed" %}Closed
+                {% when "waiting" %}Waiting
+                {% else %}Preparing
+              {% endcase %}
+            </span>
+          </div>
+
+          {% if commission.summary %}<p class="commission-summary">{{ commission.summary }}</p>{% endif %}
+          {% if commission.price %}<p class="commission-price">{{ commission.price }}</p>{% endif %}
+
+          <div class="commission-slot-box">
+            <div class="commission-slot-copy">
+              <span>Remaining slots</span>
+              {% if total > 0 %}
+                <strong>{{ remaining }} / {{ total }}</strong>
+              {% else %}
+                <strong>By inquiry</strong>
+              {% endif %}
+            </div>
+            {% if total > 0 %}
+              <div class="commission-slot-track" aria-label="{{ remaining }} of {{ total }} slots remaining">
+                <i style="width: {{ filled_percent }}%;"></i>
+              </div>
+            {% endif %}
+          </div>
+
+          {% if commission.content != "" %}
+            <details class="commission-notice"{% if commission.notice_open %} open{% endif %}>
+              <summary>{{ commission.notice_title | default: "Notice" }}</summary>
+              <div class="commission-notice-body">{{ commission.content }}</div>
+            </details>
+          {% endif %}
+
+          {% if commission.updated_at %}<p class="commission-updated">Updated {{ commission.updated_at }}</p>{% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="commission-empty">
+      <p>등록된 커미션 타입이 없습니다.</p>
+      <a href="{{ site.baseurl }}/tools/commission-editor.html" target="_blank" rel="noopener">에디터에서 첫 타입 만들기</a>
+    </div>
+  {% endif %}
+</section>
