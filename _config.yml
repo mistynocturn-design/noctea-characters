@@ -33,4 +33,5 @@ collections:
     output: true
     permalink: /twitter/:name/
   commissions:
-    output: false
+    output: true
+    permalink: /commission/:name/

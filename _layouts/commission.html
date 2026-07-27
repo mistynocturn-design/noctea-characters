@@ -1,0 +1,48 @@
+---
+layout: default
+---
+
+{% assign status = page.status | default: "closed" %}
+{% assign total = page.slots_total | default: 5 | plus: 0 %}
+{% assign filled = page.slots_filled | default: 0 | plus: 0 %}
+{% if filled < 0 %}{% assign filled = 0 %}{% endif %}
+{% if filled > total %}{% assign filled = total %}{% endif %}
+
+<article class="commission-article status-{{ status }}" style="--commission-accent:{{ page.accent | default: '#6d5c73' }};--commission-soft:{{ page.soft | default: '#f3eef4' }};">
+  <a class="detail-back-link" href="{{ site.baseurl }}/commission/">← Commission</a>
+
+  {% if page.cover_image %}
+    <figure class="commission-cover"><img src="{{ page.cover_image | relative_url }}" alt=""></figure>
+  {% endif %}
+
+  <header class="commission-article-header">
+    <p class="commission-type-label">{{ page.category | default: "Commission" }}</p>
+    <h1>{{ page.title }}</h1>
+    {% if page.summary %}<p class="commission-article-summary">{{ page.summary }}</p>{% endif %}
+
+    <div class="commission-article-state">
+      <span class="commission-open-badge is-static">
+        {% if status == "open" %}<i aria-hidden="true"></i> 신청 가능{% else %}<i aria-hidden="true"></i> 신청 마감{% endif %}
+      </span>
+      {% if total > 0 %}
+        <span class="commission-flower-slots is-large" aria-label="총 {{ total }}개 중 {{ filled }}개 선점">
+          {% for slot in (1..total) %}{% if slot <= filled %}<b aria-hidden="true">✿</b>{% else %}<i aria-hidden="true">❀</i>{% endif %}{% endfor %}
+        </span>
+        <small>✿ 선점 · ❀ 빈 슬롯</small>
+      {% endif %}
+    </div>
+
+    {% if page.price or page.format %}
+      <dl class="commission-facts">
+        {% if page.price %}<div><dt>가격</dt><dd>{{ page.price }}</dd></div>{% endif %}
+        {% if page.format %}<div><dt>작업 사양</dt><dd>{{ page.format }}</dd></div>{% endif %}
+      </dl>
+    {% endif %}
+  </header>
+
+  <div class="commission-content">
+    {{ content }}
+  </div>
+
+  {% if page.updated_at %}<p class="commission-updated">Updated {{ page.updated_at }}</p>{% endif %}
+</article>

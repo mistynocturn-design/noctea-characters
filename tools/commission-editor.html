@@ -3,204 +3,255 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Commission Markdown Editor</title>
+  <title>Commission Post Editor</title>
   <style>
-    :root { color-scheme: light; --accent:#6d5c73; --soft:#f3eef4; }
-    * { box-sizing:border-box; }
-    body { margin:0; background:#f5f3f6; color:#29252d; font-family:Paperlogy,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
-    main { margin:0 auto; max-width:1180px; padding:28px 18px 52px; }
-    h1 { font-size:1.55rem; margin:0; }
-    h2 { font-size:1rem; margin:0 0 14px; }
-    .subtitle,.hint,.status { color:#716a75; font-size:.8rem; line-height:1.6; }
-    .subtitle { margin:.4rem 0 1.2rem; }
-    .layout { display:grid; gap:16px; grid-template-columns:minmax(0,1fr) minmax(320px,.85fr); }
-    .panel { background:#fff; border:1px solid #e2dde4; border-radius:12px; box-shadow:0 8px 28px rgba(40,32,43,.05); padding:18px; }
-    .grid { display:grid; gap:12px; grid-template-columns:repeat(2,minmax(0,1fr)); }
-    label { color:#4d4650; display:block; font-size:.76rem; font-weight:750; margin:0 0 6px; }
-    input,select,textarea { background:#fff; border:1px solid #cbc3ce; border-radius:8px; color:#29252d; font:inherit; padding:10px 11px; width:100%; }
-    textarea { min-height:110px; resize:vertical; }
-    #body { min-height:250px; }
-    #output { font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:.78rem; min-height:430px; white-space:pre; }
-    input[type="color"] { min-height:42px; padding:4px; }
-    .field { margin-bottom:12px; }
-    .check { align-items:center; display:flex; gap:8px; margin-top:10px; }
-    .check input { width:auto; }
-    .check label { margin:0; }
-    .actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
-    button { background:#6d5c73; border:0; border-radius:8px; color:#fff; cursor:pointer; font:inherit; font-size:.82rem; font-weight:750; padding:10px 14px; }
-    button.secondary { background:#ebe6ed; color:#4d4650; }
-    .status { min-height:1.4em; margin:.6rem 0 0; }
-    .preview-card { background:#fff; border:1px solid #e2dde4; border-top:4px solid var(--accent); border-radius:10px; padding:16px; }
-    .preview-top { align-items:flex-start; display:flex; justify-content:space-between; gap:12px; }
-    .preview-label { color:#817887; font-size:.68rem; font-weight:800; letter-spacing:.08em; margin:0 0 4px; text-transform:uppercase; }
-    .preview-title { font-size:1.2rem; margin:0; }
-    .preview-status { background:var(--soft); border-radius:999px; color:var(--accent); font-size:.7rem; font-weight:800; padding:5px 9px; }
-    .preview-summary { color:#665f69; font-size:.82rem; line-height:1.6; }
-    .preview-price { color:var(--accent); font-weight:800; }
-    .preview-slots { background:var(--soft); border-radius:8px; margin:12px 0; padding:11px; }
-    .preview-slots div { display:flex; justify-content:space-between; font-size:.78rem; }
-    .preview-track { background:rgba(255,255,255,.85); border-radius:999px; display:block; height:6px; margin-top:8px; overflow:hidden; }
-    .preview-track i { background:var(--accent); display:block; height:100%; }
-    .preview-body { border-top:1px solid #ece7ed; font-size:.78rem; line-height:1.7; margin-top:12px; padding-top:12px; white-space:pre-wrap; }
-    @media (max-width:820px) { .layout { grid-template-columns:1fr; } }
-    @media (max-width:560px) { .grid { grid-template-columns:1fr; } }
+    :root{color-scheme:light;--accent:#6d5c73;--soft:#f3eef4}
+    *{box-sizing:border-box}
+    body{background:#f5f3f6;color:#29252d;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0}
+    main{margin:0 auto;max-width:1320px;padding:26px 18px 52px}
+    h1{font-size:1.55rem;margin:0}
+    h2{font-size:1rem;margin:0 0 14px}
+    .subtitle,.hint,.status{color:#716a75;font-size:.78rem;line-height:1.65}
+    .subtitle{margin:.4rem 0 1rem}
+    .guide{color:#716a75;font-size:.78rem;margin:0 0 16px}
+    .guide summary{cursor:pointer;font-weight:800}
+    .guide ul{line-height:1.8}
+    .layout{display:grid;gap:16px;grid-template-columns:minmax(0,1fr) minmax(360px,.88fr)}
+    .panel{background:#fff;border:1px solid #e2dde4;border-radius:12px;box-shadow:0 8px 28px rgba(40,32,43,.05);margin-bottom:16px;padding:18px}
+    .grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
+    .field{margin-bottom:12px}
+    label{color:#4d4650;display:block;font-size:.74rem;font-weight:800;margin:0 0 6px}
+    input,select,textarea{background:#fff;border:1px solid #cbc3ce;border-radius:8px;color:#29252d;font:inherit;padding:10px 11px;width:100%}
+    input[type=color]{min-height:42px;padding:4px}
+    textarea{min-height:110px;resize:vertical}
+    #body{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.8rem;line-height:1.65;min-height:520px;tab-size:2}
+    #output{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.76rem;min-height:330px;white-space:pre}
+    .toolbar{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+    .toolbar button{background:#efebf0;color:#504853;font-size:.7rem;padding:7px 9px}
+    .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    button{background:#6d5c73;border:0;border-radius:8px;color:#fff;cursor:pointer;font:inherit;font-size:.8rem;font-weight:800;padding:10px 14px}
+    button.secondary{background:#ebe6ed;color:#4d4650}
+    .status{min-height:1.4em;margin:.6rem 0 0}
+    .preview-label{color:#817887;font-size:.65rem;font-weight:800;letter-spacing:.09em;margin:0 0 4px;text-transform:uppercase}
+    .card-preview{border:1px solid #e2dde4;border-radius:11px;overflow:hidden}
+    .card-thumb{aspect-ratio:16/8;background:linear-gradient(135deg,var(--soft),#fff);overflow:hidden;position:relative}
+    .card-thumb img{height:100%;object-fit:cover;width:100%}
+    .thumb-letter{align-items:center;color:var(--accent);display:flex;font-family:Georgia,serif;font-size:3rem;height:100%;justify-content:center;opacity:.55}
+    .preview-badge{align-items:center;background:rgba(255,255,255,.93);border-radius:999px;color:#555057;display:flex;font-size:.65rem;font-weight:800;gap:5px;padding:6px 9px;position:absolute;right:10px;top:10px}
+    .preview-badge i{background:#969099;border-radius:50%;height:7px;width:7px}
+    .preview-badge.open{color:#35664a}.preview-badge.open i{background:#4b996b}
+    .card-copy{padding:14px}
+    .card-copy h3{font-size:1.05rem;margin:0}
+    .preview-summary{color:#6d6670;font-size:.76rem;line-height:1.55}
+    .card-footer{align-items:center;border-top:1px solid #eee9ef;display:flex;justify-content:space-between;padding-top:10px}
+    .preview-price{color:var(--accent);font-size:.78rem;font-weight:800}
+    .flowers{font-family:Georgia,serif;font-size:1.05rem;letter-spacing:-1px}.flowers .filled{color:var(--accent)}.flowers .empty{color:#bdb5c0}
+    .article-preview{border:1px solid #e2dde4;border-radius:11px;margin-top:14px;padding:18px}
+    .article-preview h3{font-size:1.5rem;margin:2px 0 8px}
+    .article-meta{align-items:center;display:flex;flex-wrap:wrap;gap:8px}
+    .article-meta .preview-badge{position:static}
+    .article-summary{color:#6d6670;font-size:.8rem;line-height:1.6}
+    .body-preview{border-top:1px solid #e6e1e7;font-size:.78rem;line-height:1.8;margin-top:15px;padding-top:12px}
+    .body-preview h2{border-bottom:1px solid #e8e3e9;font-size:1.1rem;margin:1.5rem 0 .6rem;padding-bottom:.4rem}
+    .body-preview h3{font-size:.9rem;margin:1.2rem 0 .5rem}
+    .body-preview blockquote{background:var(--soft);border-left:4px solid var(--accent);margin:10px 0;padding:8px 10px}
+    .body-preview img{border-radius:7px;max-width:100%}
+    .body-preview hr{border:0;border-top:1px solid #ddd7df}
+    @media(max-width:900px){.layout{grid-template-columns:1fr}}
+    @media(max-width:560px){.grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
 <main>
-  <h1>Commission Markdown Editor</h1>
-  <p class="subtitle">타입 하나를 작성한 뒤 <code>_commissions/파일명.md</code>로 저장하세요. 같은 방식으로 타입을 여러 개 추가할 수 있습니다.</p>
+  <h1>Commission Post Editor</h1>
+  <p class="subtitle">목록 카드와 클릭 후 열리는 전체 공지를 한 개의 Markdown 파일로 만듭니다.</p>
+  <details class="guide">
+    <summary>작성 방법</summary>
+    <ul>
+      <li>커미션 타입 하나당 <code>_commissions/파일명.md</code> 한 개를 만듭니다.</li>
+      <li>썸네일과 본문 이미지는 repo의 <code>assets/commission/</code>에 올린 뒤 <code>/noctea-characters/assets/commission/파일명.jpg</code>처럼 입력합니다.</li>
+      <li>제목, 인용문, 목록, 링크, 이미지 버튼으로 긴 공지를 구성할 수 있습니다.</li>
+      <li>선점된 슬롯은 ✿, 빈 슬롯은 ❀로 표시됩니다.</li>
+    </ul>
+  </details>
 
   <div class="layout">
-    <section class="panel">
-      <h2>Commission type</h2>
-      <div class="grid">
-        <div class="field"><label for="title">타입명</label><input id="title" value="Commission"></div>
-        <div class="field"><label for="slug">파일명</label><input id="slug" value="commission" placeholder="bust-up"></div>
-        <div class="field"><label for="category">상단 분류</label><input id="category" value="Default type"></div>
-        <div class="field"><label for="order">정렬 순서</label><input id="order" type="number" min="0" value="1"></div>
-        <div class="field"><label for="status">신청 상태</label><select id="status"><option value="open">Open</option><option value="waiting">Waiting</option><option value="closed">Closed</option><option value="preparing" selected>Preparing</option></select></div>
-        <div class="field"><label for="price">가격 안내</label><input id="price" value="Details coming soon"></div>
-        <div class="field"><label for="slotsTotal">전체 슬롯</label><input id="slotsTotal" type="number" min="0" value="0"></div>
-        <div class="field"><label for="slotsRemaining">남은 슬롯</label><input id="slotsRemaining" type="number" min="0" value="0"></div>
-        <div class="field"><label for="accent">강조색</label><input id="accent" type="color" value="#6d5c73"></div>
-        <div class="field"><label for="soft">배경색</label><input id="soft" type="color" value="#f3eef4"></div>
+    <section>
+      <div class="panel">
+        <h2>게시글 정보</h2>
+        <div class="grid">
+          <div class="field"><label for="title">제목</label><input id="title" value="Commission"></div>
+          <div class="field"><label for="slug">파일명</label><input id="slug" value="commission" placeholder="portrait-template"></div>
+          <div class="field"><label for="category">분류</label><input id="category" value="Commission type"></div>
+          <div class="field"><label for="order">목록 순서</label><input id="order" type="number" min="0" value="1"></div>
+          <div class="field"><label for="commissionStatus">신청 상태</label><select id="commissionStatus"><option value="open">신청 가능</option><option value="closed" selected>신청 마감</option></select></div>
+          <div class="field"><label for="price">가격</label><input id="price" value="Details coming soon"></div>
+          <div class="field"><label for="slotsTotal">전체 슬롯</label><input id="slotsTotal" type="number" min="0" max="20" value="5"></div>
+          <div class="field"><label for="slotsFilled">선점된 슬롯</label><input id="slotsFilled" type="number" min="0" max="20" value="3"></div>
+          <div class="field"><label for="format">작업 사양</label><input id="format" placeholder="800×800 px, 300dpi"></div>
+          <div class="field"><label for="updatedAt">업데이트 날짜</label><input id="updatedAt" type="date"></div>
+          <div class="field"><label for="accent">강조색</label><input id="accent" type="color" value="#6d5c73"></div>
+          <div class="field"><label for="soft">보조색</label><input id="soft" type="color" value="#f3eef4"></div>
+        </div>
+        <div class="field"><label for="summary">목록에 보일 요약</label><input id="summary" value="신청 안내를 준비하고 있습니다."></div>
+        <div class="field"><label for="thumbnail">목록 썸네일 이미지</label><input id="thumbnail" placeholder="/noctea-characters/assets/commission/thumbnail.jpg"></div>
+        <div class="field"><label for="coverImage">상세 페이지 상단 이미지</label><input id="coverImage" placeholder="/noctea-characters/assets/commission/cover.jpg"></div>
       </div>
-      <div class="field"><label for="summary">한 줄 소개</label><input id="summary" value="신청 안내를 준비하고 있습니다."></div>
-      <div class="grid">
-        <div class="field"><label for="noticeTitle">공지 제목</label><input id="noticeTitle" value="Notice"></div>
-        <div class="field"><label for="updatedAt">업데이트 날짜</label><input id="updatedAt" type="date"></div>
-      </div>
-      <div class="check"><input id="noticeOpen" type="checkbox" checked><label for="noticeOpen">페이지에서 공지를 펼쳐서 표시</label></div>
-      <div class="field" style="margin-top:12px"><label for="body">공지 본문 (Markdown)</label><textarea id="body">커미션 타입별 공지와 신청 조건을 이곳에 작성합니다.
 
-- 작업 범위
-- 진행 기간
-- 신청 전 확인사항</textarea></div>
-      <div class="actions">
-        <button id="build" type="button">Markdown 만들기</button>
-        <button id="copy" class="secondary" type="button">복사</button>
-        <button id="download" class="secondary" type="button">.md 다운로드</button>
+      <div class="panel">
+        <h2>전체 공지 본문</h2>
+        <div class="toolbar" aria-label="Markdown helpers">
+          <button type="button" data-before="## " data-after="" data-placeholder="섹션 제목">큰 제목</button>
+          <button type="button" data-before="### " data-after="" data-placeholder="소제목">소제목</button>
+          <button type="button" data-before="> " data-after="" data-placeholder="강조 안내">안내 박스</button>
+          <button type="button" data-before="- " data-after="" data-placeholder="목록 내용">목록</button>
+          <button type="button" data-before="**" data-after="**" data-placeholder="굵은 글자">굵게</button>
+          <button type="button" data-before="[" data-after="](https://example.com)" data-placeholder="링크 이름">링크</button>
+          <button type="button" data-before="![" data-after="](/noctea-characters/assets/commission/sample.jpg)" data-placeholder="이미지 설명">이미지</button>
+          <button type="button" data-divider="true">구분선</button>
+        </div>
+        <textarea id="body">> 가격과 신청 상태를 확인한 뒤 아래 내용을 읽어주세요.
+
+## 커미션 안내
+
+작업 타입과 표현 범위를 자세히 적어주세요.
+
+## 저작권 및 이용 범위
+
+- 완성본의 저작권 안내
+- 가능한 이용 범위
+- 금지 사항
+
+## 작업 관련
+
+### 작업 순서
+
+1. 신청서 접수
+2. 러프 전달 및 컨펌
+3. 완성본 전달
+4. 오류 확인
+
+### 작업 기간
+
+작업 기간과 컨펌 횟수를 적어주세요.
+
+## 신청서
+
+1. 캐릭터 외관 자료
+2. 원하는 표정과 분위기
+3. 반드시 포함할 요소
+
+## 샘플
+
+![샘플 설명](/noctea-characters/assets/commission/sample.jpg)</textarea>
+        <div class="actions">
+          <button id="build" type="button">Markdown 만들기</button>
+          <button id="copy" class="secondary" type="button">복사</button>
+          <button id="download" class="secondary" type="button">.md 다운로드</button>
+        </div>
+        <p class="status" id="statusMessage" role="status"></p>
       </div>
-      <p class="status" id="statusMessage" role="status"></p>
     </section>
 
     <aside>
-      <section class="panel" style="margin-bottom:16px">
-        <h2>Preview</h2>
-        <article class="preview-card" id="previewCard">
-          <div class="preview-top"><div><p class="preview-label" id="previewCategory"></p><h3 class="preview-title" id="previewTitle"></h3></div><span class="preview-status" id="previewStatus"></span></div>
-          <p class="preview-summary" id="previewSummary"></p>
-          <p class="preview-price" id="previewPrice"></p>
-          <div class="preview-slots"><div><span>Remaining slots</span><strong id="previewSlots"></strong></div><span class="preview-track" id="previewTrack"><i></i></span></div>
-          <div class="preview-body" id="previewBody"></div>
+      <div class="panel">
+        <h2>목록 카드 미리보기</h2>
+        <article class="card-preview" id="cardPreview">
+          <div class="card-thumb"><img id="previewThumb" alt="" hidden><span class="thumb-letter" id="previewLetter">C</span><span class="preview-badge" id="previewBadge"><i></i><span></span></span></div>
+          <div class="card-copy">
+            <p class="preview-label" id="previewCategory"></p>
+            <h3 id="previewTitle"></h3>
+            <p class="preview-summary" id="previewSummary"></p>
+            <div class="card-footer"><span class="preview-price" id="previewPrice"></span><span class="flowers" id="previewFlowers"></span></div>
+          </div>
         </article>
-      </section>
-      <section class="panel">
+
+        <h2 style="margin-top:20px">상세 페이지 미리보기</h2>
+        <article class="article-preview" id="articlePreview">
+          <p class="preview-label" id="articleCategory"></p>
+          <h3 id="articleTitle"></h3>
+          <p class="article-summary" id="articleSummary"></p>
+          <div class="article-meta"><span class="preview-badge" id="articleBadge"><i></i><span></span></span><span class="flowers" id="articleFlowers"></span></div>
+          <div class="body-preview" id="bodyPreview"></div>
+        </article>
+      </div>
+      <div class="panel">
         <h2>Output</h2>
         <textarea id="output" spellcheck="false" aria-label="Generated Markdown"></textarea>
-      </section>
+      </div>
     </aside>
   </div>
 </main>
 <script>
-(function () {
-  var ids = ['title','slug','category','order','status','price','slotsTotal','slotsRemaining','accent','soft','summary','noticeTitle','updatedAt','noticeOpen','body'];
-  var fields = {};
-  ids.forEach(function (id) { fields[id] = document.getElementById(id); });
-  var output = document.getElementById('output');
-  var message = document.getElementById('statusMessage');
-  var storageKey = 'noctea-commission-editor';
-
-  function yaml(value) {
-    return '"' + String(value == null ? '' : value).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\r?\n/g, '\\n') + '"';
+(function(){
+  var ids=['title','slug','category','order','commissionStatus','price','slotsTotal','slotsFilled','format','updatedAt','accent','soft','summary','thumbnail','coverImage','body'];
+  var f={};ids.forEach(function(id){f[id]=document.getElementById(id)});
+  var output=document.getElementById('output'),message=document.getElementById('statusMessage'),storageKey='noctea-commission-post-editor-v2';
+  function yaml(value){return '"'+String(value==null?'':value).replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\r?\n/g,'\\n')+'"'}
+  function slug(value){return String(value||'commission').trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9가-힣_-]/g,'').replace(/-+/g,'-')||'commission'}
+  function slots(){var total=Math.max(0,Math.min(20,parseInt(f.slotsTotal.value,10)||0)),filled=Math.max(0,Math.min(total,parseInt(f.slotsFilled.value,10)||0));return{total:total,filled:filled}}
+  function flowers(){var s=slots(),html='';for(var i=1;i<=s.total;i++)html+=i<=s.filled?'<span class="filled">✿</span>':'<span class="empty">❀</span>';return html}
+  function escapeHtml(value){return String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+  function safeUrl(value){var url=String(value||'').trim();return /^(?:https?:\/\/|\/|assets\/)/i.test(url)?url:'#'}
+  function inline(text){
+    var source=escapeHtml(text);
+    source=source.replace(/!\[([^\]]*)\]\(([^)]+)\)/g,function(_,alt,url){return '<img src="'+escapeHtml(safeUrl(url))+'" alt="'+alt+'">'});
+    source=source.replace(/\[([^\]]+)\]\(([^)]+)\)/g,function(_,label,url){return '<a href="'+escapeHtml(safeUrl(url))+'">'+label+'</a>'});
+    source=source.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+    return source;
   }
-  function safeSlug(value) {
-    return String(value || 'commission').trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9가-힣_-]/g, '').replace(/-+/g, '-') || 'commission';
+  function markdown(text){
+    var lines=String(text||'').replace(/\r/g,'').split('\n'),html=[],list='';
+    function closeList(){if(list){html.push('</'+list+'>');list=''}}
+    lines.forEach(function(line){
+      var m;
+      if(/^### /.test(line)){closeList();html.push('<h3>'+inline(line.slice(4))+'</h3>')}
+      else if(/^## /.test(line)){closeList();html.push('<h2>'+inline(line.slice(3))+'</h2>')}
+      else if(/^> /.test(line)){closeList();html.push('<blockquote>'+inline(line.slice(2))+'</blockquote>')}
+      else if(/^---+$/.test(line.trim())){closeList();html.push('<hr>')}
+      else if((m=line.match(/^- (.+)/))){if(list!=='ul'){closeList();list='ul';html.push('<ul>')}html.push('<li>'+inline(m[1])+'</li>')}
+      else if((m=line.match(/^\d+\. (.+)/))){if(list!=='ol'){closeList();list='ol';html.push('<ol>')}html.push('<li>'+inline(m[1])+'</li>')}
+      else if(!line.trim()){closeList()}
+      else{closeList();html.push('<p>'+inline(line)+'</p>')}
+    });closeList();return html.join('');
   }
-  function numbers() {
-    var total = Math.max(0, parseInt(fields.slotsTotal.value, 10) || 0);
-    var remaining = Math.max(0, parseInt(fields.slotsRemaining.value, 10) || 0);
-    if (total > 0) remaining = Math.min(remaining, total);
-    return { total: total, remaining: remaining };
+  function render(){
+    var open=f.commissionStatus.value==='open',badgeText=open?'신청 가능':'신청 마감',thumb=f.thumbnail.value.trim();
+    document.documentElement.style.setProperty('--accent',f.accent.value);document.documentElement.style.setProperty('--soft',f.soft.value);
+    ['previewBadge','articleBadge'].forEach(function(id){var el=document.getElementById(id);el.classList.toggle('open',open);el.querySelector('span').textContent=badgeText});
+    document.getElementById('previewCategory').textContent=f.category.value||'Commission';
+    document.getElementById('previewTitle').textContent=f.title.value||'Untitled';
+    document.getElementById('previewSummary').textContent=f.summary.value;
+    document.getElementById('previewPrice').textContent=f.price.value;
+    document.getElementById('previewFlowers').innerHTML=flowers();
+    document.getElementById('articleFlowers').innerHTML=flowers();
+    document.getElementById('previewLetter').textContent=(f.title.value||'C').slice(0,1);
+    var image=document.getElementById('previewThumb');image.hidden=!thumb;document.getElementById('previewLetter').hidden=!!thumb;if(thumb)image.src=thumb;
+    document.getElementById('articleCategory').textContent=f.category.value||'Commission';
+    document.getElementById('articleTitle').textContent=f.title.value||'Untitled';
+    document.getElementById('articleSummary').textContent=f.summary.value;
+    document.getElementById('bodyPreview').innerHTML=markdown(f.body.value);
   }
-  function buildMarkdown() {
-    var slot = numbers();
-    fields.slug.value = safeSlug(fields.slug.value);
-    var lines = [
-      '---',
-      'title: ' + yaml(fields.title.value.trim()),
-      'category: ' + yaml(fields.category.value.trim()),
-      'order: ' + (parseInt(fields.order.value, 10) || 0),
-      'status: ' + yaml(fields.status.value),
-      'slots_total: ' + slot.total,
-      'slots_remaining: ' + slot.remaining,
-      'price: ' + yaml(fields.price.value.trim()),
-      'summary: ' + yaml(fields.summary.value.trim()),
-      'accent: ' + yaml(fields.accent.value),
-      'soft: ' + yaml(fields.soft.value),
-      'notice_title: ' + yaml(fields.noticeTitle.value.trim() || 'Notice'),
-      'notice_open: ' + (fields.noticeOpen.checked ? 'true' : 'false'),
-      'updated_at: ' + yaml(fields.updatedAt.value),
-      '---',
-      '',
-      fields.body.value.trim(),
-      ''
-    ];
-    output.value = lines.join('\n');
-    save();
-    renderPreview();
-    return output.value;
+  function build(){
+    var s=slots();f.slug.value=slug(f.slug.value);
+    output.value=[
+      '---','layout: commission','title: '+yaml(f.title.value.trim()),'category: '+yaml(f.category.value.trim()),
+      'order: '+(parseInt(f.order.value,10)||0),'status: '+yaml(f.commissionStatus.value),
+      'slots_total: '+s.total,'slots_filled: '+s.filled,'price: '+yaml(f.price.value.trim()),
+      'format: '+yaml(f.format.value.trim()),'summary: '+yaml(f.summary.value.trim()),
+      'thumbnail: '+yaml(f.thumbnail.value.trim()),'cover_image: '+yaml(f.coverImage.value.trim()),
+      'accent: '+yaml(f.accent.value),'soft: '+yaml(f.soft.value),'updated_at: '+yaml(f.updatedAt.value),
+      '---','',f.body.value.trim(),''
+    ].join('\n');save();render();return output.value
   }
-  function renderPreview() {
-    var slot = numbers();
-    var labels = { open:'Open', waiting:'Waiting', closed:'Closed', preparing:'Preparing' };
-    document.getElementById('previewCategory').textContent = fields.category.value || 'Commission type';
-    document.getElementById('previewTitle').textContent = fields.title.value || 'Untitled';
-    document.getElementById('previewStatus').textContent = labels[fields.status.value] || 'Preparing';
-    document.getElementById('previewSummary').textContent = fields.summary.value;
-    document.getElementById('previewPrice').textContent = fields.price.value;
-    document.getElementById('previewSlots').textContent = slot.total > 0 ? slot.remaining + ' / ' + slot.total : 'By inquiry';
-    document.getElementById('previewTrack').hidden = slot.total === 0;
-    document.querySelector('#previewTrack i').style.width = (slot.total ? ((slot.total - slot.remaining) / slot.total * 100) : 0) + '%';
-    document.getElementById('previewBody').textContent = fields.body.value;
-    document.getElementById('previewCard').style.setProperty('--accent', fields.accent.value);
-    document.getElementById('previewCard').style.setProperty('--soft', fields.soft.value);
-  }
-  function save() {
-    var state = {};
-    ids.forEach(function (id) { state[id] = fields[id].type === 'checkbox' ? fields[id].checked : fields[id].value; });
-    try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch (error) {}
-  }
-  function load() {
-    try {
-      var state = JSON.parse(localStorage.getItem(storageKey) || '{}');
-      ids.forEach(function (id) {
-        if (!Object.prototype.hasOwnProperty.call(state, id)) return;
-        if (fields[id].type === 'checkbox') fields[id].checked = !!state[id];
-        else fields[id].value = state[id];
-      });
-    } catch (error) {}
-    if (!fields.updatedAt.value) fields.updatedAt.value = new Date().toISOString().slice(0, 10);
-  }
-  document.getElementById('build').addEventListener('click', function () { buildMarkdown(); message.textContent = 'Markdown을 만들었습니다.'; });
-  document.getElementById('copy').addEventListener('click', async function () {
-    var text = buildMarkdown();
-    try { await navigator.clipboard.writeText(text); message.textContent = 'Markdown을 복사했습니다.'; }
-    catch (error) { output.focus(); output.select(); document.execCommand('copy'); message.textContent = 'Markdown을 복사했습니다.'; }
-  });
-  document.getElementById('download').addEventListener('click', function () {
-    var blob = new Blob([buildMarkdown()], { type:'text/markdown;charset=utf-8' });
-    var link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = safeSlug(fields.slug.value) + '.md';
-    link.click();
-    URL.revokeObjectURL(link.href);
-    message.textContent = link.download + ' 파일을 만들었습니다.';
-  });
-  ids.forEach(function (id) { fields[id].addEventListener('input', function () { save(); renderPreview(); }); });
-  load();
-  buildMarkdown();
+  function save(){var state={};ids.forEach(function(id){state[id]=f[id].value});try{localStorage.setItem(storageKey,JSON.stringify(state))}catch(error){}}
+  function load(){try{var state=JSON.parse(localStorage.getItem(storageKey)||'{}');ids.forEach(function(id){if(Object.prototype.hasOwnProperty.call(state,id))f[id].value=state[id]})}catch(error){}if(!f.updatedAt.value)f.updatedAt.value=new Date().toISOString().slice(0,10)}
+  document.querySelectorAll('.toolbar button').forEach(function(button){button.addEventListener('click',function(){var start=f.body.selectionStart,end=f.body.selectionEnd,selected=f.body.value.slice(start,end)||button.dataset.placeholder||'',insert=button.dataset.divider?'\n---\n':(button.dataset.before||'')+selected+(button.dataset.after||'');f.body.setRangeText(insert,start,end,'end');f.body.focus();save();render()})});
+  document.getElementById('build').addEventListener('click',function(){build();message.textContent='전체 게시글 Markdown을 만들었습니다.'});
+  document.getElementById('copy').addEventListener('click',async function(){var text=build();try{await navigator.clipboard.writeText(text)}catch(error){output.focus();output.select();document.execCommand('copy')}message.textContent='Markdown을 복사했습니다.'});
+  document.getElementById('download').addEventListener('click',function(){var blob=new Blob([build()],{type:'text/markdown;charset=utf-8'}),link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=slug(f.slug.value)+'.md';link.click();URL.revokeObjectURL(link.href);message.textContent=link.download+' 파일을 만들었습니다.'});
+  ids.forEach(function(id){f[id].addEventListener('input',function(){save();render()})});
+  load();build();
 })();
 </script>
 </body>
