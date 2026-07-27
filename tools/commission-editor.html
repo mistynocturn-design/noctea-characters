@@ -16,6 +16,9 @@
     .guide{color:#716a75;font-size:.78rem;margin:0 0 16px}
     .guide summary{cursor:pointer;font-weight:800}
     .guide ul{line-height:1.8}
+    .import-panel{align-items:center;display:flex;gap:14px;justify-content:space-between}
+    .import-panel h2{margin-bottom:4px}.import-panel p{margin:0}
+    .import-panel button{flex:0 0 auto}
     .layout{display:grid;gap:16px;grid-template-columns:minmax(0,1fr) minmax(360px,.88fr)}
     .panel{background:#fff;border:1px solid #e2dde4;border-radius:12px;box-shadow:0 8px 28px rgba(40,32,43,.05);margin-bottom:16px;padding:18px}
     .grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -69,6 +72,7 @@
     <summary>작성 방법</summary>
     <ul>
       <li>커미션 타입 하나당 <code>_commissions/파일명.md</code> 한 개를 만듭니다.</li>
+      <li>이미 등록된 글은 <strong>기존 .md 불러오기</strong>로 내용을 되채워 수정할 수 있습니다.</li>
       <li>이미지를 첨부하기 전에 게시글의 <strong>파일명</strong>을 먼저 정해주세요.</li>
       <li>대표 이미지는 목록 카드와 상세 페이지 상단에 함께 사용됩니다. 본문 이미지는 파일 선택이나 드래그앤드롭으로 추가할 수 있습니다.</li>
       <li>첨부 후 <strong>이미지를 repo에 저장</strong>을 누르고 <code>noctea-characters</code> 폴더를 선택하면 <code>assets/commission/파일명/</code>이 자동으로 만들어집니다.</li>
@@ -79,6 +83,15 @@
 
   <div class="layout">
     <section>
+      <div class="panel import-panel">
+        <div>
+          <h2>기존 게시글 수정</h2>
+          <p class="hint">등록된 커미션의 <code>_commissions/*.md</code> 파일을 불러오세요.</p>
+        </div>
+        <button class="secondary" id="importPost" type="button">기존 .md 불러오기</button>
+        <input id="postFile" type="file" accept=".md,text/markdown,text/plain" hidden>
+      </div>
+
       <div class="panel">
         <h2>게시글 정보</h2>
         <div class="grid">
@@ -198,6 +211,45 @@
   var attachments=[],attachmentData={};
   function yaml(value){return '"'+String(value==null?'':value).replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\r?\n/g,'\\n')+'"'}
   function slug(value){return String(value||'commission').trim().toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9가-힣_-]/g,'').replace(/-+/g,'-')||'commission'}
+  function yamlScalar(value){
+    var raw=String(value==null?'':value).trim();
+    if(!raw)return'';
+    if(raw.charAt(0)==='"'){
+      try{return JSON.parse(raw)}catch(error){return raw.slice(1,-1)}
+    }
+    if(raw.charAt(0)==="'"&&raw.charAt(raw.length-1)==="'")return raw.slice(1,-1).replace(/''/g,"'");
+    if(raw==='null'||raw==='~')return'';
+    return raw;
+  }
+  function importMarkdown(text,fileName){
+    var source=String(text||'').replace(/^\uFEFF/,'').replace(/\r/g,'');
+    var match=source.match(/^---\n([\s\S]*?)\n---(?:\n|$)([\s\S]*)$/);
+    if(!match)throw new Error('파일 앞부분의 게시글 정보(--- 구간)를 찾을 수 없습니다.');
+    var data={};
+    match[1].split('\n').forEach(function(line){
+      var item=line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
+      if(item)data[item[1]]=yamlScalar(item[2]);
+    });
+    var defaults={
+      title:'',category:'Commission type',order:'1',commissionStatus:'closed',price:'',
+      slotsTotal:'5',slotsFilled:'0',format:'',workPeriod:'',updatedAt:new Date().toISOString().slice(0,10),
+      accent:'#6d5c73',soft:'#f3eef4',summary:'',image:''
+    };
+    Object.keys(defaults).forEach(function(id){f[id].value=defaults[id]});
+    var fields={
+      title:'title',category:'category',order:'order',status:'commissionStatus',price:'price',
+      slots_total:'slotsTotal',slots_filled:'slotsFilled',format:'format',work_period:'workPeriod',
+      updated_at:'updatedAt',accent:'accent',soft:'soft',summary:'summary'
+    };
+    Object.keys(fields).forEach(function(key){
+      if(Object.prototype.hasOwnProperty.call(data,key)&&String(data[key])!=='')f[fields[key]].value=String(data[key]);
+    });
+    f.slug.value=slug((fileName||'').replace(/\.md$/i,'')||data.slug||'commission');
+    f.image.value=String(data.image||data.thumbnail||data.cover_image||'');
+    f.body.value=match[2].replace(/^\n/,'').replace(/\s+$/,'');
+    attachments=[];attachmentData={};renderAttachmentList();
+    build();
+  }
   function slots(){var total=Math.max(0,Math.min(20,parseInt(f.slotsTotal.value,10)||0)),filled=Math.max(0,Math.min(total,parseInt(f.slotsFilled.value,10)||0));return{total:total,filled:filled}}
   function flowers(){var s=slots(),html='';for(var i=1;i<=s.total;i++)html+=i<=s.filled?'<span class="filled">✿</span>':'<span class="empty">❀</span>';return html}
   function detailFlowers(){var s=slots(),html='';for(var i=1;i<=s.total;i++)html+=i<=s.filled?'<b aria-hidden="true">✿</b>':'<i aria-hidden="true">❀</i>';return html}
@@ -338,6 +390,14 @@
     f.body.focus();save();render();
   });
   document.getElementById('pickImage').addEventListener('click',function(){document.getElementById('imageFile').click()});
+  document.getElementById('importPost').addEventListener('click',function(){document.getElementById('postFile').click()});
+  document.getElementById('postFile').addEventListener('change',async function(){
+    var file=this.files[0];this.value='';if(!file)return;
+    try{
+      importMarkdown(await file.text(),file.name);
+      message.textContent=file.name+' 내용을 불러왔습니다. 수정 후 같은 파일명으로 다시 다운로드하세요.';
+    }catch(error){message.textContent='게시글을 불러오지 못했습니다: '+error.message}
+  });
   document.getElementById('insertBodyImage').addEventListener('click',function(){document.getElementById('bodyImageFiles').click()});
   document.getElementById('imageFile').addEventListener('change',function(){if(this.files[0])addImage(this.files[0],'image');this.value=''});
   document.getElementById('bodyImageFiles').addEventListener('change',function(){addBodyImages(Array.from(this.files));this.value=''});
