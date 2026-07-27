@@ -60,3 +60,6 @@ updated_at: "2026-07-27"
 
 ## 샘플
 ![샘플4.png](/noctea-characters/assets/commission/side-fixed-type/샘플4.png)
+![샘플5.png](/noctea-characters/assets/commission/side-fixed-type/샘플5.png)
+![샘플6.png](/noctea-characters/assets/commission/side-fixed-type/샘플6.png)
+![샘플7.png](/noctea-characters/assets/commission/side-fixed-type/샘플7.png)
