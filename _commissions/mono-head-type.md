@@ -3,7 +3,7 @@ layout: commission
 title: "흑백 두상 타입"
 category: "Regular Type"
 order: 2
-status: "closed"
+status: "reservation"
 slots_total: 2
 slots_filled: 2
 reservation_slots_open: 1
