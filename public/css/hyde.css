@@ -3593,9 +3593,13 @@ a.sidebar-nav-item:hover,a.sidebar-nav-item:focus{color:#baa7bf;text-decoration:
 .home-details { --character-accent: var(--home-accent); --character-soft: var(--home-soft); --character-ink: var(--home-ink); --character-section-text: #fff; margin-top: clamp(1rem, 2.5vw, 1.75rem); width: 100%; }
 .home-details-content { color: var(--home-ink); font-size: .78rem; line-height: 1.8; min-height: 7rem; padding: 1rem 1.1rem 1.2rem; }
 .home-detail-plain .character-detail-content { border-top: 0; }
-.home-markdown { white-space: pre-line; }
+.home-markdown p { white-space: pre-line; }
 .home-markdown > :first-child { margin-top: 0; }
 .home-markdown > :last-child { margin-bottom: 0; }
+.home-markdown ul,
+.home-markdown ol { margin: .35rem 0; padding-left: 1.35rem; }
+.home-markdown li { margin: .12rem 0; }
+.home-markdown li > p { margin: 0; }
 .home-markdown a { color: var(--home-accent); font-weight: 600; text-decoration: underline; text-underline-offset: .16em; }
 .home-markdown a:hover,
 .home-markdown a:focus { color: color-mix(in srgb, var(--home-accent) 72%, #000); }
