@@ -21,7 +21,7 @@ title: Home
           <div class="character-profile-detail home-detail-plain">
             <div class="character-detail-content">
               {% if detail.text %}
-                <div class="character-detail-text">{{ detail.text | newline_to_br }}</div>
+                <div class="character-detail-text home-markdown">{{ detail.text | markdownify }}</div>
               {% endif %}
               {% if detail.images %}
                 <div class="character-detail-images character-detail-images-{{ detail.images | size }}">
@@ -37,7 +37,7 @@ title: Home
             <summary>{{ detail.title }}</summary>
             <div class="character-detail-content">
               {% if detail.text %}
-                <div class="character-detail-text">{{ detail.text | newline_to_br }}</div>
+                <div class="character-detail-text home-markdown">{{ detail.text | markdownify }}</div>
               {% endif %}
               {% if detail.images %}
                 <div class="character-detail-images character-detail-images-{{ detail.images | size }}">
@@ -56,4 +56,4 @@ title: Home
     {% endif %}
   </section>
 </section>
-<script>(function(){var image=document.querySelector('[data-home-hero-image]');if(!image)return;function crop(){var box=image.parentElement,nw=image.naturalWidth,nh=image.naturalHeight,bw=box.clientWidth,bh=box.clientHeight;if(!nw||!nh||!bw||!bh)return;var ratio=bw/bh,maxW,maxH;if(nw/nh>ratio){maxH=nh;maxW=nh*ratio}else{maxW=nw;maxH=nw/ratio}var zoom=Math.max(1,Number(image.dataset.cropZoom)||1),w=maxW/zoom,h=maxH/zoom,x=(nw-w)*(Number(image.dataset.cropX)||0)/100,y=(nh-h)*(Number(image.dataset.cropY)||0)/100,scale=bw/w;image.style.width=nw*scale+'px';image.style.height=nh*scale+'px';image.style.left=-x*scale+'px';image.style.top=-y*scale+'px'}image.addEventListener('load',crop);window.addEventListener('resize',crop);if(image.complete)crop()})();</script>
+<script>(function(){var image=document.querySelector('[data-home-hero-image]');function crop(){if(!image)return;var box=image.parentElement,nw=image.naturalWidth,nh=image.naturalHeight,bw=box.clientWidth,bh=box.clientHeight;if(!nw||!nh||!bw||!bh)return;var ratio=bw/bh,maxW,maxH;if(nw/nh>ratio){maxH=nh;maxW=nh*ratio}else{maxW=nw;maxH=nw/ratio}var zoom=Math.max(1,Number(image.dataset.cropZoom)||1),w=maxW/zoom,h=maxH/zoom,x=(nw-w)*(Number(image.dataset.cropX)||0)/100,y=(nh-h)*(Number(image.dataset.cropY)||0)/100,scale=bw/w;image.style.width=nw*scale+'px';image.style.height=nh*scale+'px';image.style.left=-x*scale+'px';image.style.top=-y*scale+'px'}if(image){image.addEventListener('load',crop);window.addEventListener('resize',crop);if(image.complete)crop()}document.querySelectorAll('.home-details a[href]').forEach(function(link){if(/^https?:\/\//i.test(link.getAttribute('href'))){link.target='_blank';link.rel='noopener noreferrer'}})})();</script>
