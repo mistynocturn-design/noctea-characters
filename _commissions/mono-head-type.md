@@ -3,10 +3,10 @@ layout: commission
 title: "흑백 두상 타입"
 category: "Regular Type"
 order: 2
-status: "reservation"
+status: "closed"
 slots_total: 2
 slots_filled: 2
-reservation_slots_open: 1
+reservation_slots_open: 0
 reservation_slots_closed: 0
 price: "18,000원 ~"
 format: "800x800~pxl(유동적 조절), 300dpi"
