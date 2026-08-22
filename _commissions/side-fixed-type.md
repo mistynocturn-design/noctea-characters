@@ -3,9 +3,9 @@ layout: commission
 title: "측면 반고정틀 타입"
 category: "YCH Type"
 order: 1
-status: "open"
+status: "closed_final"
 slots_total: 3
-slots_filled: 1
+slots_filled: 0
 reservation_slots_open: 0
 reservation_slots_closed: 0
 price: "15,000원"
@@ -80,3 +80,4 @@ updated_at: "2026-07-27"
 ![샘플5.png](/noctea-characters/assets/commission/side-fixed-type/샘플5.png)
 ![샘플6.png](/noctea-characters/assets/commission/side-fixed-type/샘플6.png)
 ![샘플7.png](/noctea-characters/assets/commission/side-fixed-type/샘플7.png)
+![샘플8.png](/noctea-characters/assets/commission/side-fixed-type/샘플8.png)
