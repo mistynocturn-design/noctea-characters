@@ -3,9 +3,9 @@ layout: commission
 title: "흑백 두상 타입"
 category: "Regular Type"
 order: 2
-status: "closed"
+status: "closed_final"
 slots_total: 2
-slots_filled: 2
+slots_filled: 0
 reservation_slots_open: 0
 reservation_slots_closed: 0
 price: "18,000원 ~"
